@@ -1,9 +1,7 @@
 <template>
-
-  <div> 
-    
+  <div>
     <v-card class="d-flex flex-wrap align-center pa-4">
-      <div style="width:400px" >
+      <div style="width: 400px">
         <v-select
           v-model="selFilter"
           :items="campaigns"
@@ -13,47 +11,48 @@
           dense
           outlined
           hide-details
-          placeholder="캠페인"
         />
       </div>
       <v-divider vertical class="mx-4" />
-      {{selFilter}}
+      {{ selFilter }}
       <v-spacer />
       <v-btn color="primary" large>신규생성</v-btn>
     </v-card>
     <v-card class="mt-4 px-4">
       <div class="d-flex flex-wrap justify-space-between">
-        <div style="width:49%">
-          <title-card :name="'기간 대비 예상'" />
+        <div style="width: 49%">
+          <title-card :name="'프로세스'" />
           <v-progress-linear
             color="primary lighten-1"
             rounded
             height="25"
             value="20"
             class="primary--text"
-          >20%</v-progress-linear>
+            >20%</v-progress-linear
+          >
         </div>
-        <div style="width:49%" >
-          <title-card :name="'현재 진행 상황'" />
-          
+        <div style="width: 49%">
+          <title-card :name="'진행'" />
+
           <v-progress-linear
             color="primary lighten-1"
             rounded
             height="25"
             value="20"
             class="primary--text"
-          >20%</v-progress-linear>
+            >20%</v-progress-linear
+          >
         </div>
       </div>
       <div class="mt-4">
-      <chart-card :charttype="4" :name="'완료 / 누적완료'"/>
+        <chart-card :charttype="4" :name="'완료 / 누적완료'" />
       </div>
     </v-card>
     <v-row>
       <v-col cols="12" md="3">
         <v-card height="100vh" class="mt-4">
-          <title-card :name="'고객사별 캠페인'" />
-          <div style="height:90vh" class="mt-4 overflow-y-auto">
+          <title-card :name="'대시보드'" />
+          <div style="height: 90vh" class="mt-4 overflow-y-auto">
             <v-treeview
               selectable
               dense
@@ -67,10 +66,10 @@
       <v-col cols="12" md="9">
         <v-card height="100vh" class="mt-4 px-4">
           <div class="d-flex flex-wrap align-center">
-            <v-tabs style="width:70%">
-              <v-tab v-for="el of tabs" :key="el.id">{{el.name}}</v-tab>
+            <v-tabs style="width: 70%">
+              <v-tab v-for="el of tabs" :key="el.id">{{ el.name }}</v-tab>
             </v-tabs>
-            <div style="width:150px">
+            <div style="width: 150px">
               <v-select
                 v-model="selFilter"
                 :items="campaigns"
@@ -80,104 +79,103 @@
                 dense
                 outlined
                 hide-details
-                placeholder="담당자"   
+                placeholder="담당자"
               />
             </div>
           </div>
-          <ag-grid v-if="isTableReady" style="height:100%" :columndefs="[]" :multiselection="[]" />
-
-
+          <ag-grid
+            v-if="isTableReady"
+            style="height: 100%"
+            :columndefs="[]"
+            :multiselection="[]"
+          />
         </v-card>
       </v-col>
     </v-row>
-   
   </div>
-  
 </template>
 
 <script>
-import TitleCard from './partial/TitleCard.vue'
-import ChartCard from './partial/ChartCard'
+import TitleCard from "./partial/TitleCard.vue";
+import ChartCard from "./partial/ChartCard";
 
-import AgGrid from './partial/AgGrid.vue'
+import AgGrid from "./partial/AgGrid.vue";
 
 export default {
   components: { TitleCard, ChartCard, AgGrid },
-  name:'CampaignView',
-  data(){
+  name: "CampaignView",
+  data() {
     return {
-      campaigns:[],
-      selFilter:null,
+      campaigns: [],
+      selFilter: null,
 
-      isTableReady:false,
+      isTableReady: false,
 
-      companies:[
-         {
+      companies: [
+        {
           id: 1,
-          name: 'Applications :',
+          name: "Applications :",
           children: [
-            { id: 2, name: 'Calendar : app' },
-            { id: 3, name: 'Chrome : app' },
-            { id: 4, name: 'Webstorm : app' },
+            { id: 2, name: "Calendar : app" },
+            { id: 3, name: "Chrome : app" },
+            { id: 4, name: "Webstorm : app" },
           ],
         },
         {
           id: 1,
-          name: 'Applications :',
+          name: "Applications :",
           children: [
-            { id: 2, name: 'Calendar : app' },
-            { id: 3, name: 'Chrome : app' },
-            { id: 4, name: 'Webstorm : app' },
+            { id: 2, name: "Calendar : app" },
+            { id: 3, name: "Chrome : app" },
+            { id: 4, name: "Webstorm : app" },
           ],
         },
         {
           id: 5,
-          name: 'Documents :',
+          name: "Documents :",
           children: [
             {
               id: 6,
-              name: 'vuetify :',
+              name: "vuetify :",
               children: [
                 {
                   id: 7,
-                  name: 'src :',
+                  name: "src :",
                   children: [
-                    { id: 8, name: 'index : ts' },
-                    { id: 9, name: 'bootstrap : ts' },
+                    { id: 8, name: "index : ts" },
+                    { id: 9, name: "bootstrap : ts" },
                   ],
                 },
               ],
             },
             {
               id: 10,
-              name: 'material2 :',
+              name: "material2 :",
               children: [
                 {
                   id: 11,
-                  name: 'src :',
+                  name: "src :",
                   children: [
-                    { id: 12, name: 'v-btn : ts' },
-                    { id: 13, name: 'v-card : ts' },
-                    { id: 14, name: 'v-window : ts' },
+                    { id: 12, name: "v-btn : ts" },
+                    { id: 13, name: "v-card : ts" },
+                    { id: 14, name: "v-window : ts" },
                   ],
                 },
               ],
             },
           ],
         },
-       
       ],
-      tabs:[
-        {name:'전체', id:1},
-        {name:'신규', id:2},
-        {name:'진행', id:3},
-        {name:'완료', id:4},
-      ]
-    }
-  }
-}
+      tabs: [
+        { name: "전체", id: 1 },
+        { name: "신규", id: 2 },
+        { name: "진행", id: 3 },
+        { name: "완료", id: 4 },
+      ],
+    };
+  },
+};
 </script>
 
 <style>
-
 </style>

@@ -23,7 +23,7 @@ export default new Router({
        
         {
           path: 'status',
-          name: '상황도',
+          name: 'map',
           component: StatusView,
         },
         {
