@@ -78,8 +78,8 @@ export default {
   data: () => ({
     sidebarMenu: true,
     items: [
-      { title: "상황도", to: "status", icon: "mdi-map-outline" },
-      { title: "캠페인", to: "campaign", icon: "mdi-calendar-check" },
+      { title: "map", to: "status", icon: "mdi-map-outline" },
+      { title: "tree", to: "campaign", icon: "mdi-calendar-check" },
     ],
   }),
 
