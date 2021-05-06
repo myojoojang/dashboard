@@ -41,13 +41,8 @@
               <v-list-item-title
                 class="d-flex align-center justify-center white--text"
               >
-                <v-img
-                  src="../../assets/ncurity_cl_white.png"
-                  max-height="30"
-                  max-width="30"
-                  class="mr-2"
-                ></v-img>
-                <h3>Space View</h3>
+                
+                <h3>Dashboard testing</h3>
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
