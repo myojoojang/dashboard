@@ -3,8 +3,7 @@
   <v-app>
     <app-bar />
     <v-main class="ma-4 mt-2">
-      <v-card v-if="$route.name === '메인'" color="white">메인</v-card>
-      <router-view v-else />
+      <router-view />
     </v-main>
     <main-footer />
   </v-app>

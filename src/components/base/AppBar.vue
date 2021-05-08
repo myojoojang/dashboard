@@ -19,12 +19,6 @@
       </v-toolbar-title>
 
       <v-spacer />
-
-      <v-avatar size="25" color="white">
-        <v-icon small>mdi-account</v-icon>
-      </v-avatar>
-      <span class="white--text mx-3">장묘주</span>
-      <v-icon color="white">mdi-menu-down</v-icon>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -34,15 +28,18 @@
       floating
       color="transparent"
     >
-      <v-card flat color="primary" class="pa-0 mx-2 mt-1">
+      <v-card flat color="primary" class="pa-0 mx-2 mt-3">
         <v-list>
           <v-list-item link to="/">
             <v-list-item-content>
               <v-list-item-title
                 class="d-flex align-center justify-center white--text"
               >
-                
-                <h3>Dashboard testing</h3>
+                <v-icon class="mx-1" color="white"
+                  >mdi-circle-multiple-outline</v-icon
+                >
+
+                <h3>Coin Tracker</h3>
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -78,8 +75,8 @@ export default {
   data: () => ({
     sidebarMenu: true,
     items: [
-      { title: "map", to: "status", icon: "mdi-map-outline" },
-      { title: "tree", to: "campaign", icon: "mdi-calendar-check" },
+      { title: "Dashboard", to: "/", icon: "mdi-map-outline" },
+      { title: "WIP", to: "personal", icon: "mdi-calendar-check" },
     ],
   }),
 

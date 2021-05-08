@@ -8,7 +8,7 @@ Vue.use(Router)
 import MainIndex from './components/base/MainIndex'
 // import GuideView from './components/GuideView'
 import StatusView from './components/StatusView'
-import CampaignView from './components/CampaignView'
+import personalView from './components/personalView'
 
 
 export default new Router({
@@ -17,19 +17,18 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name:'메인',
       component: MainIndex,
       children: [
-       
         {
-          path: 'status',
-          name: 'map',
+          path: '',
+          name: 'Dashboard',
           component: StatusView,
         },
+
         {
-          path: 'campaign',
-          name: '캠페인',
-          component: CampaignView,
+          path: 'personal',
+          name: 'Personal',
+          component: personalView,
         },
 
       ],

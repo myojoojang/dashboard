@@ -12,7 +12,6 @@
         enable-cell-text-selection="true"
         :grid-options="gridOptions"
         :default-col-def="defaultColDef"
-        :locale-text="gridLocalText"
         @first-data-rendered="onFirstDataRendered"
         @grid-size-changed="onGridSizeChanged"
       />
@@ -45,57 +44,6 @@ export default {
 
       tmpArr: [],
       selectedRow: [],
-
-      gridLocalText: {
-        // Set Filter
-        selectAll: "모두 선택",
-        selectAllSearchResults: "검색 결과 모두 선택",
-        searchOoo: "검색",
-        blanks: "(Blanks)",
-        noMatches: "일치 결과 없음",
-
-        // Number Filter & Text Filter
-        filterOoo: "검색",
-        equals: "모두 일치",
-        notEqual: "모두 미일치",
-        empty: "Choose One",
-
-        // Text Filter
-        contains: "포함",
-        notContains: "미포함",
-        startsWith: "시작",
-        endsWith: "끝",
-
-        // Date Filter
-        dateFormatOoo: "yyyy-mm-dd",
-
-        // Filter Conditions
-        andCondition: "과",
-        orCondition: "또는",
-
-        // Filter Buttons
-        applyFilter: "적용",
-        resetFilter: "리셋",
-        clearFilter: "모두 지우기",
-        cancelFilter: "취소",
-
-        to: "부터",
-        of: "/",
-        page: "페이지",
-
-        loadingOoo: "로딩중",
-        noRowsToShow: "데이터가 없습니다.",
-        enabled: "사용",
-
-        // // Number Filter
-        // lessThan: 'Less than',
-        // greaterThan: 'Greater than',
-        // lessThanOrEqual: 'Less than or equal',
-        // greaterThanOrEqual: 'Greater than or equal',
-        // inRange: 'In range',
-        // inRangeStart: '시작 값',
-        // inRangeEnd: '마지막 값',
-      },
     };
   },
 
@@ -113,7 +61,7 @@ export default {
       suppressHorizontalScroll: false,
       suppressSizeToFit: false,
     };
-    this.paginationPageSize = this.auItemsPerPage;
+    // this.paginationPageSize = this.auItemsPerPage;
     this.rowSelection = "multiple";
   },
   mounted() {

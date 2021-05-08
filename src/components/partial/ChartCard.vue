@@ -1,16 +1,16 @@
 <template>
   <div>
-    <h4 class="pa-1 px-3 primary--text">{{ name }}</h4>
-    <div class="chart-container d-flex align-center justify-center">
+    <h4 class="pa-1 px-3 primary--text mb-2">{{ name }}</h4>
+    <div class="chart-container" v-if="charttype !== 5">
       <bar-chart
         v-if="charttype === 1"
         :chartdata="chartdata"
-        :options="options"
+        :options="barChartOptions"
       />
       <line-chart
         v-if="charttype === 2"
         :chartdata="chartdata"
-        :options="options"
+        :options="lineChartOptions"
       />
       <horizontal-bar-chart
         v-if="charttype === 3"
@@ -20,20 +20,27 @@
       <doughnut-chart
         v-if="charttype === 4"
         :chartdata="chartdata"
-        :options="options"
+        :options="donutChartOptions"
+      />
+    </div>
+    <div class="large-chart-container" v-else>
+      <line-chart
+        v-if="charttype === 5"
+        :chartdata="chartdata"
+        :options="timestampChartOptions"
       />
     </div>
   </div>
 </template>
 
 <script>
-import BarChart from './chart/BarChart.vue'
-import DoughnutChart from './chart/DoughnutChart.vue'
-import HorizontalBarChart from './chart/HorizontalBarChart.vue'
-import LineChart from './chart/LineChart.vue'
+import BarChart from "./chart/BarChart.vue";
+import DoughnutChart from "./chart/DoughnutChart.vue";
+import HorizontalBarChart from "./chart/HorizontalBarChart.vue";
+import LineChart from "./chart/LineChart.vue";
 
 export default {
-  name: 'ChartCard',
+  name: "ChartCard",
   components: {
     BarChart,
     LineChart,
@@ -43,7 +50,7 @@ export default {
   props: {
     name: {
       type: String,
-      default: '차트',
+      default: "차트",
     },
     charttype: {
       type: Number,
@@ -58,20 +65,167 @@ export default {
       default: null,
     },
   },
-}
+
+  data() {
+    return {
+      timestampChartOptions: {
+        legend: {
+          display: false,
+        },
+        tooltips: {
+          displayColors: false,
+        },
+        scales: {
+          yAxes: [
+            {
+              stacked: false,
+              ticks: {
+                fontSize: 9,
+                beginAtZero: false,
+                callback: (value) => {
+                  if (value >= 1000) {
+                    return Intl.NumberFormat().format(value / 1000) + "k";
+                  } else {
+                    return value;
+                  }
+                },
+              },
+              gridLines: {
+                display: true,
+              },
+            },
+          ],
+          xAxes: [
+            {
+              stacked: false,
+              gridLines: {
+                display: false,
+              },
+              ticks: {
+                fontSize: 9,
+                autoSkip: true,
+                autoSkipPadding: 20,
+                maxRotation: 0,
+              },
+            },
+          ],
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 0,
+        },
+        spanGaps: false,
+      },
+      lineChartOptions: {
+        legend: {
+          display: true,
+          labels: {
+            usePointStyle: false,
+            fontSize: 10,
+            boxWidth: 10,
+          },
+        },
+        tooltips: {
+          displayColors: true,
+        },
+        scales: {
+          yAxes: [
+            {
+              stacked: false,
+              ticks: {
+                fontSize: 9,
+                beginAtZero: false,
+                callback: (value) => {
+                  if (value >= 1000) {
+                    return Intl.NumberFormat().format(value / 1000) + "k";
+                  } else {
+                    return value;
+                  }
+                },
+              },
+              gridLines: {
+                display: true,
+              },
+            },
+          ],
+          xAxes: [
+            {
+              diaplay: false,
+              stacked: false,
+              gridLines: {
+                display: false,
+              },
+              ticks: {
+                fontSize: 9,
+                autoSkip: true,
+                autoSkipPadding: 20,
+                maxRotation: 0,
+              },
+            },
+          ],
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 0,
+        },
+      },
+      donutChartOptions: {
+        legend: {
+          maxWidth: "200px",
+          display: false,
+          position: "right",
+          labels: {
+            fontColor: "#46484b",
+            usePointStyle: true,
+            fontSize: 9,
+          },
+        },
+        tooltips: {
+          displayColors: true,
+          callbacks: {
+            label: (tooltipItem, data) => {
+              const dataLabel = data.labels[tooltipItem.index];
+              const value = data.datasets[tooltipItem.datasetIndex].data[
+                tooltipItem.index
+              ].toLocaleString();
+              const tooltip = dataLabel + " : " + value;
+              return tooltip;
+            },
+          },
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 0,
+        },
+      },
+    };
+  },
+};
 </script>
 
 
 <style lang="scss" scoped>
 .chart-container {
   flex-grow: 1;
-  min-height: 100px;
+  min-height: 150px;
   > div {
     position: relative;
-    height: 18vh;
+    height: 25vh;
     padding-left: 0;
   }
 }
 
+.large-chart-container {
+  flex-grow: 1;
+  min-height: 250px;
+  > div {
+    position: relative;
+    height: 70vh;
+    padding-left: 0;
+  }
+}
 </style>
 
