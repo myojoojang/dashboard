@@ -1,6 +1,8 @@
 <template>
   <div>
     <v-card height="100%" class="mt-2 pa-4" min-height="250px">
+      <title-card :name="`Cryptocurrency of ${dt}`" />
+      <v-divider class="my-4" />
       <div class="d-flex flex-wrap">
         <div style="width: 50%">
           <chart-card
@@ -103,6 +105,7 @@ import ChartDlg from "./ChartDlg";
 
 import { API_URL } from "../globalVars";
 import axios from "axios";
+import TitleCard from "./partial/TitleCard.vue";
 
 export default {
   name: "StatusView",
@@ -111,9 +114,11 @@ export default {
     // TitleCard,
     AgGrid,
     ChartDlg,
+    TitleCard,
   },
 
   created() {
+    this.dt = new Date().toLocaleDateString();
     this.init();
   },
   data() {
@@ -124,7 +129,7 @@ export default {
         { name: "Rise", id: 2 },
         { name: "Drop", id: 3 },
       ],
-
+      dt: "",
       Currencies: [],
       selCurrency: "usd",
 

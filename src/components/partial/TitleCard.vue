@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex align-center ma-2">
-    <h4 class="primary--text">{{ name }}</h4>
+    <h3 class="primary--text">{{ name }}</h3>
 
     <div v-if="addr">
       <v-tooltip top>
@@ -23,7 +23,7 @@
 
 <script>
 export default {
-  name: 'TitleCard',
+  name: "TitleCard",
   props: {
     name: {
       type: String,
@@ -33,5 +33,5 @@ export default {
       default: null,
     },
   },
-}
+};
 </script>

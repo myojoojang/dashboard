@@ -119,7 +119,7 @@ export default {
       },
       lineChartOptions: {
         legend: {
-          display: true,
+          display: false,
           labels: {
             usePointStyle: false,
             fontSize: 10,

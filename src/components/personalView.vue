@@ -4,7 +4,7 @@
       <div style="width: 400px">
         <v-select
           v-model="selFilter"
-          :items="campaigns"
+          :items="Crryptos"
           item-text="name"
           return-object
           rounded
@@ -16,12 +16,12 @@
       <v-divider vertical class="mx-4" />
       {{ selFilter }}
       <v-spacer />
-      <v-btn color="primary" large>신규생성</v-btn>
+      <v-btn color="primary" large>add New</v-btn>
     </v-card>
-    <v-card class="mt-4 px-4">
+    <v-card class="mt-4 pa-4">
       <div class="d-flex flex-wrap justify-space-between">
         <div style="width: 49%">
-          <title-card :name="'프로세스'" />
+          <title-card :name="'Prosess'" />
           <v-progress-linear
             color="primary lighten-1"
             rounded
@@ -32,7 +32,7 @@
           >
         </div>
         <div style="width: 49%">
-          <title-card :name="'진행'" />
+          <title-card :name="'wip'" />
 
           <v-progress-linear
             color="primary lighten-1"
@@ -45,13 +45,13 @@
         </div>
       </div>
       <div class="mt-4">
-        <chart-card :charttype="4" :name="'완료 / 누적완료'" />
+        <chart-card :charttype="4" :name="'Finsh'" />
       </div>
     </v-card>
     <v-row>
       <v-col cols="12" md="3">
-        <v-card height="100vh" class="mt-4">
-          <title-card :name="'대시보드'" />
+        <v-card height="100vh" class="mt-4 pa-4">
+          <title-card :name="'select '" />
           <div style="height: 90vh" class="mt-4 overflow-y-auto">
             <v-treeview
               selectable
@@ -64,7 +64,7 @@
         </v-card>
       </v-col>
       <v-col cols="12" md="9">
-        <v-card height="100vh" class="mt-4 px-4">
+        <v-card height="100vh" class="mt-4 pa-4">
           <div class="d-flex flex-wrap align-center">
             <v-tabs style="width: 70%">
               <v-tab v-for="el of tabs" :key="el.id">{{ el.name }}</v-tab>
@@ -72,14 +72,14 @@
             <div style="width: 150px">
               <v-select
                 v-model="selFilter"
-                :items="campaigns"
+                :items="Crryptos"
                 item-text="name"
                 return-object
                 rounded
                 dense
                 outlined
                 hide-details
-                placeholder="담당자"
+                placeholder=""
               />
             </div>
           </div>
@@ -106,7 +106,7 @@ export default {
   name: "CampaignView",
   data() {
     return {
-      campaigns: [],
+      Crryptos: [],
       selFilter: null,
 
       isTableReady: false,
@@ -167,10 +167,10 @@ export default {
         },
       ],
       tabs: [
-        { name: "전체", id: 1 },
-        { name: "신규", id: 2 },
-        { name: "진행", id: 3 },
-        { name: "완료", id: 4 },
+        { name: "all", id: 1 },
+        { name: "1", id: 2 },
+        { name: "2", id: 3 },
+        { name: "3", id: 4 },
       ],
     };
   },
