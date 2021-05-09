@@ -74,9 +74,10 @@
       <ag-grid
         ref="data1"
         v-if="isTableReady"
-        style="height: 85vh"
+        style="height: 100%"
         :columndefs="headers"
         :rowdata="rowData"
+        class="py-4"
         @selected-data="selectedData"
       />
     </v-card>
