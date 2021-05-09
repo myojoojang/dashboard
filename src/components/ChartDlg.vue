@@ -95,8 +95,6 @@ export default {
 
   methods: {
     init() {
-      console.log(this.selPeriod);
-
       this.chartLoaded = false;
       axios
         .get(
@@ -104,7 +102,7 @@ export default {
         )
         .then((res) => {
           const data = res.data;
-          console.log(res);
+
           this.setChartData(data);
         })
         .catch((err) => {

@@ -70,7 +70,7 @@ export default {
     return {
       timestampChartOptions: {
         legend: {
-          display: false,
+          display: true,
         },
         tooltips: {
           displayColors: false,

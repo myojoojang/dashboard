@@ -25,9 +25,8 @@
       <div class="bar-chart-container pa-4">
         <chart-card
           v-if="lineChartLoaded"
-          :name="'Highest Prices (last 7days)'"
+          :name="'Top 10 Cryptocurrency (last 7days)'"
           :chartdata="timestampChartData"
-          :options="timestampChartOptions"
           :charttype="2"
         />
       </div>
@@ -50,13 +49,12 @@
         <v-spacer />
         <v-btn
           color="primary"
-          small
           outlined
           text
           class="ma-2"
           @click="getRowDataFromGrid"
         >
-          <v-icon small>mdi-check</v-icon>Compare
+          <v-icon small class="mr-2">mdi-checkbox-marked</v-icon>Compare
         </v-btn>
         <div class="ma-2" style="width: 150px">
           <v-select
@@ -74,7 +72,7 @@
       <ag-grid
         ref="data1"
         v-if="isTableReady"
-        style="height: 100%"
+        style="height: 92%"
         :columndefs="headers"
         :rowdata="rowData"
         class="py-4"
@@ -143,7 +141,6 @@ export default {
       supplyChartLoaded: false,
       supplyChartData: null,
 
-      timestampChartOptions: null,
       timestampChartData: null,
       lineChartLoaded: false,
 
@@ -182,6 +179,7 @@ export default {
       axios.all([currencyReq, priceReq]).then(
         axios.spread((currRes, priceRes) => {
           // output of req.
+          console.log(priceRes);
           this.Currencies = currRes.data;
           this.allCryptos = priceRes.data;
           this.setTableDef(priceRes.data);
