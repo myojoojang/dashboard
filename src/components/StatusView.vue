@@ -47,35 +47,31 @@
         </div>
 
         <v-spacer />
-        <v-btn
-          color="primary"
-          outlined
-          text
-          class="ma-2"
-          @click="getRowDataFromGrid"
-        >
-          <v-icon small class="mr-2">mdi-checkbox-marked</v-icon>Compare
-        </v-btn>
-        <div class="ma-2" style="width: 150px">
-          <v-select
-            v-model="selCurrency"
-            :items="Currencies"
-            rounded
-            dense
-            outlined
-            hide-details
-            placeholder="Currency"
-            @change="init() + (tab = 0) + tabChange()"
-          />
+        <div class="ma-2 d-flex">
+          <div class="ma-2" style="width: 150px">
+            <v-select
+              v-model="selCurrency"
+              :items="Currencies"
+              rounded
+              dense
+              outlined
+              hide-details
+              placeholder="Currency"
+              @change="init() + (tab = 0) + tabChange()"
+            />
+          </div>
+          <v-btn color="primary" class="ma-2" @click="getRowDataFromGrid">
+            <v-icon small class="mr-2">mdi-checkbox-marked</v-icon>Compare
+          </v-btn>
         </div>
       </div>
       <ag-grid
         ref="data1"
         v-if="isTableReady"
-        style="height: 92%"
+        style="height: 90%"
         :columndefs="headers"
         :rowdata="rowData"
-        class="py-4"
+        class="pb-4"
         @selected-data="selectedData"
       />
     </v-card>
@@ -395,16 +391,7 @@ export default {
             return cap.toLocaleString();
           },
         },
-        // {
-        //   headerName: "Total Volume",
-        //   field: "total_volume",
-        //   type: "rightAligned",
-        // },
-        // {
-        //   headerName: "Total Supply",
-        //   field: "total_supply",
-        //   type: "rightAligned",
-        // },
+
         {
           headerName: "",
           field: "job",
@@ -422,6 +409,8 @@ export default {
       this.isTableReady = true;
     },
     setDetailBtn(params) {
+      this.propData = null;
+      this.compareReq = false;
       const btnContainer = document.createElement("div");
       btnContainer.innerHTML =
         '<button type="button" class="v-btn v-btn--fab v-btn--round theme--light v-size--x-small primary--text btn-detail"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-magnify theme--light"></i></span></button> ';
