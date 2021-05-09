@@ -3,8 +3,16 @@
     <v-card height="100%" class="mt-2 pa-4" min-height="250px">
       <title-card :name="`Cryptocurrency of ${dt}`" />
       <v-divider class="my-4" />
-      <div class="d-flex flex-wrap">
-        <div style="width: 50%">
+      <div class="d-flex flex-wrap justify-space-between">
+        <div style="width: 30%">
+          <chart-card
+            v-if="capChartLoaded"
+            :name="'Market Caps'"
+            :chartdata="capChartData"
+            :charttype="4"
+          />
+        </div>
+        <div style="width: 30%">
           <chart-card
             v-if="volumeChartLoaded"
             :name="'Total Volume'"
@@ -12,17 +20,18 @@
             :charttype="4"
           />
         </div>
-        <div style="width: 50%">
+
+        <div style="width: 30%">
           <chart-card
             v-if="supplyChartLoaded"
-            :name="'Market Caps'"
+            :name="'Circulating Supply'"
             :chartdata="supplyChartData"
             :charttype="4"
           />
         </div>
       </div>
 
-      <div class="bar-chart-container pa-4">
+      <div class="bar-chart-container pa-4 mt-4">
         <chart-card
           v-if="lineChartLoaded"
           :name="'Top 10 Cryptocurrency (last 7days)'"
@@ -39,16 +48,15 @@
         </v-card> -->
 
     <v-card height="100vh" class="mt-2">
-      <div class="d-flex justify-space-around align-center">
+      <div class="d-flex flex-wrap justify-space-between align-center">
         <div style="width: 300px">
           <v-tabs v-model="tab" @change="tabChange" class="pa-2 pb-0">
             <v-tab v-for="el of tabs" :key="el.id">{{ el.name }}</v-tab>
           </v-tabs>
         </div>
 
-        <v-spacer />
-        <div class="ma-2 d-flex">
-          <div class="ma-2" style="width: 150px">
+        <div class="ma-2 d-flex justify-end">
+          <div style="width: 150px">
             <v-select
               v-model="selCurrency"
               :items="Currencies"
@@ -60,7 +68,7 @@
               @change="init() + (tab = 0) + tabChange()"
             />
           </div>
-          <v-btn color="primary" class="ma-2" @click="getRowDataFromGrid">
+          <v-btn class="mx-4" color="primary" @click="getRowDataFromGrid">
             <v-icon small class="mr-2">mdi-checkbox-marked</v-icon>Compare
           </v-btn>
         </div>
@@ -134,8 +142,12 @@ export default {
 
       volumeChartLoaded: false,
       volumeChartData: null,
+
       supplyChartLoaded: false,
       supplyChartData: null,
+
+      capChartLoaded: false,
+      capChartData: null,
 
       timestampChartData: null,
       lineChartLoaded: false,
@@ -164,6 +176,7 @@ export default {
       this.isTableReady = false;
       this.supplyChartLoaded = false;
       this.volumeChartLoaded = false;
+      this.capChartLoaded = false;
       this.lineChartLoaded = false;
       // console.log(this.selCurrency);
       const priceReq = axios.get(
@@ -180,6 +193,7 @@ export default {
           this.allCryptos = priceRes.data;
           this.setTableDef(priceRes.data);
           this.setVolumeData();
+          this.setCapData();
           this.setSupplyData();
           this.setTimestampChart();
         })
@@ -266,7 +280,8 @@ export default {
       this.compareReq = true;
       this.showDlg = true;
     },
-    setSupplyData() {
+
+    setCapData() {
       const data = {
         labels: [],
         datasets: [],
@@ -276,6 +291,23 @@ export default {
       for (let el of this.allCryptos) {
         data.labels.push(el.name);
         data.datasets.push(el.market_cap);
+        data.color.push(this.dynamicColors());
+      }
+
+      this.capChartData = this.showChart(data);
+      this.capChartLoaded = true;
+    },
+
+    setSupplyData() {
+      const data = {
+        labels: [],
+        datasets: [],
+        color: [],
+      };
+
+      for (let el of this.allCryptos) {
+        data.labels.push(el.name);
+        data.datasets.push(el.circulating_supply);
         data.color.push(this.dynamicColors());
       }
 
@@ -389,6 +421,15 @@ export default {
           cellRenderer: (params) => {
             const cap = params.data.market_cap;
             return cap.toLocaleString();
+          },
+        },
+        {
+          headerName: "Circulating Supply",
+          field: "circulating_supply",
+          type: "rightAligned",
+          cellRenderer: (params) => {
+            const sup = params.data.circulating_supply;
+            return sup.toLocaleString();
           },
         },
 

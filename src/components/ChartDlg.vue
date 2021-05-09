@@ -6,7 +6,7 @@
       </v-btn>
     </v-toolbar>
 
-    <v-card-text class="pa-10" style="height: 100%">
+    <v-card-text class="pa-10 pt-1" style="height: 100%">
       <template v-if="compareReq">
         <chart-card
           v-if="lineChartLoaded"
@@ -16,10 +16,14 @@
       /></template>
 
       <template v-else>
-        <v-sheet rounded="" color="primary" class="white--text mb-8 pa-4">
+        <div class="text-right mb-1">
+          Last update {{ propData.last_updated }}
+          <v-chip small outlined>{{ propData.currency }}</v-chip>
+        </div>
+        <v-sheet rounded color="primary" class="white--text mb-8 pa-4">
           <div class="d-flex">
-            <div>
-              <div class="d-flex align-center">
+            <div style="width: 100%" class="mx-4">
+              <div class="d-flex flex-wrap align-center justify-space-between">
                 <v-img
                   :src="propData.image"
                   max-width="50px"
@@ -30,41 +34,76 @@
                 <v-chip small color="white"
                   >#{{ propData.market_cap_rank }}</v-chip
                 >
+                <v-spacer />
+                <div class="">
+                  Current Price
+                  <span class="display-1">{{
+                    propData.current_price.toLocaleString()
+                  }}</span>
+                  <v-chip
+                    class="mb-4 ma-1"
+                    small
+                    :color="
+                      propData.price_change_percentage_24h > 0
+                        ? 'success'
+                        : 'error'
+                    "
+                    >{{ propData.price_change_percentage_24h }}%
+                  </v-chip>
+                  <v-divider dark />
+                  <div class="text-right pa-2">
+                    <v-chip dark x-small outlined>24h</v-chip>
+                    Low
+                    <b class="mr-2">{{ propData.low_24h.toLocaleString() }}</b>
+                    High
+                    <b>{{ propData.high_24h.toLocaleString() }}</b>
+                  </div>
+                </div>
               </div>
-              <div>
-                {{ propData.current_price }}
-                {{ propData.total_volume }}
+              <v-divider dark class="my-4" />
+              <div class="ma-4 d-flex flex-wrap justify-space-between">
+                <div class="my-1">
+                  Market Cap
+                  <div>
+                    <b>{{ propData.market_cap.toLocaleString() }}</b>
+                    <!-- {{ propData.market_cap_change_24h.toLocaleString() }} -->
 
-                {{ propData.high_24h }}
-                {{ propData.low_24h }}
-                {{ propData.price_change_24h }}
-                {{ propData.price_change_percentage_24h }}
+                    <v-chip
+                      class="mb-3 ma-1"
+                      small
+                      :color="
+                        propData.price_change_percentage_24h > 0
+                          ? 'success'
+                          : 'error'
+                      "
+                      >{{ propData.market_cap_change_percentage_24h }} %</v-chip
+                    >
+                  </div>
+                </div>
+                <div class="my-1">
+                  Total Volume
+                  <div>
+                    <b>{{ propData.total_volume.toLocaleString() }}</b>
+                  </div>
+                </div>
+
+                <div class="my-1">
+                  <div>
+                    Circulating Supply
+                    <b>{{ propData.circulating_supply.toLocaleString() }}</b>
+                  </div>
+                  <div>
+                    Total Supply
+                    <b>{{ propData.total_supply.toLocaleString() }}</b>
+                  </div>
+                  <div>
+                    Max Supply <b>{{ propData.max_supply.toLocaleString() }}</b>
+                  </div>
+                </div>
               </div>
-              --
-
-              {{ propData.market_cap }}
-              {{ propData.market_cap_change_24h }}
-              {{ propData.market_cap_change_percentage_24h }}
-
-              거래량
-              {{ propData.total_supply }}
-              {{ propData.circulating_supply }}
-              ---
-              {{ propData.ath }}
-              {{ propData.ath_change_percentage }}
-              {{ propData.ath_date }}
-
-              ---
-              {{ propData.atl }}
-              {{ propData.atl_change_percentage }}
-              {{ propData.atl_date }}
-
-              "ath": 64805, "ath_change_percentage": -9.69851, "ath_date":
-              "2021-04-14T11:54:46.763Z", "atl": 67.81, "atl_change_percentage":
-              86200.68373, "atl_date": "2013-07-06T00:00:00.000Z",
             </div>
-            <v-spacer />
-            <v-sheet outlined width="40%" min-width="400px">
+
+            <v-sheet outlined min-width="300px" class="mx-4">
               <h4 class="ma-2 primary--text">Price in 7 days</h4>
               <v-sparkline
                 :value="propData.sparkline_in_7d.price"
