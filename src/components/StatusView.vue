@@ -15,7 +15,7 @@
         <div style="width: 50%">
           <chart-card
             v-if="supplyChartLoaded"
-            :name="'Total Supply'"
+            :name="'Market Caps'"
             :chartdata="supplyChartData"
             :charttype="4"
           />
@@ -261,6 +261,11 @@ export default {
         return;
       }
 
+      if (items.length > 20) {
+        alert("Please Select less than 20 🤞");
+        return;
+      }
+
       this.propData = items;
       this.compareReq = true;
       this.showDlg = true;
@@ -274,7 +279,7 @@ export default {
 
       for (let el of this.allCryptos) {
         data.labels.push(el.name);
-        data.datasets.push(el.total_supply);
+        data.datasets.push(el.market_cap);
         data.color.push(this.dynamicColors());
       }
 
@@ -308,6 +313,11 @@ export default {
         },
 
         {
+          headerName: "#",
+          field: "market_cap_rank",
+          width: 80,
+        },
+        {
           headerName: "",
           field: "image",
           cellRenderer: (params) => {
@@ -337,7 +347,7 @@ export default {
           type: "rightAligned",
         },
         {
-          headerName: "Rise and Drop Rates last 24h",
+          headerName: "Rise and Drop Rate last 24h",
           field: "price_change_percentage_24h",
           cellRenderer: (params) => {
             const per = params.data.price_change_percentage_24h;
@@ -396,7 +406,7 @@ export default {
         //   type: "rightAligned",
         // },
         {
-          headerName: "Actions",
+          headerName: "",
           field: "job",
           cellRenderer: (params) => {
             const button = this.setDetailBtn(params);

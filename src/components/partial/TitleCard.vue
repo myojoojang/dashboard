@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex align-center ma-2">
-    <h3 class="primary--text">{{ name }}</h3>
+    <h2 class="primary--text">{{ name }}</h2>
 
     <div v-if="addr">
       <v-tooltip top>

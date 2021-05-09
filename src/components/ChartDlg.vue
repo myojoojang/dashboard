@@ -1,14 +1,7 @@
 <template>
   <v-card class="br-none">
     <v-toolbar dense flat class="pa-0 d-flex justify-center">
-      <v-btn
-        fab
-        outlined
-        small
-        color="primary"
-        icon
-        @click="$emit('close-dlg')"
-      >
+      <v-btn outlined fab x-small color="primary" @click="$emit('close-dlg')">
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </v-toolbar>
@@ -23,6 +16,66 @@
       /></template>
 
       <template v-else>
+        <v-sheet rounded="" color="primary" class="white--text mb-8 pa-4">
+          <div class="d-flex">
+            <div>
+              <div class="d-flex align-center">
+                <v-img
+                  :src="propData.image"
+                  max-width="50px"
+                  max-height="50px"
+                />
+                <h1 class="white--text ma-2">{{ propData.name }}</h1>
+
+                <v-chip small color="white"
+                  >#{{ propData.market_cap_rank }}</v-chip
+                >
+              </div>
+              <div>
+                {{ propData.current_price }}
+                {{ propData.total_volume }}
+
+                {{ propData.high_24h }}
+                {{ propData.low_24h }}
+                {{ propData.price_change_24h }}
+                {{ propData.price_change_percentage_24h }}
+              </div>
+              --
+
+              {{ propData.market_cap }}
+              {{ propData.market_cap_change_24h }}
+              {{ propData.market_cap_change_percentage_24h }}
+
+              거래량
+              {{ propData.total_supply }}
+              {{ propData.circulating_supply }}
+              ---
+              {{ propData.ath }}
+              {{ propData.ath_change_percentage }}
+              {{ propData.ath_date }}
+
+              ---
+              {{ propData.atl }}
+              {{ propData.atl_change_percentage }}
+              {{ propData.atl_date }}
+
+              "ath": 64805, "ath_change_percentage": -9.69851, "ath_date":
+              "2021-04-14T11:54:46.763Z", "atl": 67.81, "atl_change_percentage":
+              86200.68373, "atl_date": "2013-07-06T00:00:00.000Z",
+            </div>
+            <v-spacer />
+            <v-sheet outlined width="40%" min-width="400px">
+              <h4 class="ma-2 primary--text">Price in 7 days</h4>
+              <v-sparkline
+                :value="propData.sparkline_in_7d.price"
+                color="primary"
+                line-width="1"
+                padding="16"
+              ></v-sparkline>
+            </v-sheet>
+          </div>
+        </v-sheet>
+
         <title-card
           :name="`${propData.name} - Market data of Last ${selPeriod} days `"
         />
@@ -39,7 +92,7 @@
         <v-divider class="my-4" />
         <chart-card
           v-if="chartLoaded"
-          :name="`Market Caps`"
+          :name="`Market Cap`"
           :chartdata="markCapsChart"
           :charttype="2"
         />

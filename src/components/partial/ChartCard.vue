@@ -223,7 +223,7 @@ export default {
   min-height: 250px;
   > div {
     position: relative;
-    height: 70vh;
+    height: 80vh;
     padding-left: 0;
   }
 }
