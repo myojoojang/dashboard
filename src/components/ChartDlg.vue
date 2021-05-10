@@ -38,7 +38,7 @@
                 <div class="">
                   Current Price
                   <span class="display-1">{{
-                    data.current_price.toLocaleString() || ''
+                    data.current_price
                   }}</span>
                   <v-chip
                     class="mb-4 ma-1"
@@ -54,9 +54,9 @@
                   <div class="text-right pa-2">
                     <v-chip dark x-small outlined>24h</v-chip>
                     Low
-                    <b class="mr-2">{{ data.low_24h.toLocaleString()  || ''}}</b>
+                    <b class="mr-2">{{ data.low_24h}}</b>
                     High
-                    <b>{{ data.high_24h.toLocaleString() || '' }}</b>
+                    <b>{{ data.high_24h }}</b>
                   </div>
                 </div>
               </div>
@@ -65,8 +65,8 @@
                 <div class="my-1">
                   Market Cap
                   <div>
-                    <b>{{ data.market_cap.toLocaleString() || '' }}</b>
-                    <!-- {{ data.market_cap_change_24h.toLocaleString() || '' }} -->
+                    <b>{{ data.market_cap}}</b>
+                    <!-- {{ data.market_cap_change_24h }} -->
 
                     <v-chip
                       class="mb-3 ma-1"
@@ -83,21 +83,21 @@
                 <div class="my-1">
                   Total Volume
                   <div>
-                    <b>{{ data.total_volume.toLocaleString()  || '' }}</b>
+                    <b>{{ data.total_volume }}</b>
                   </div>
                 </div>
 
                 <div class="my-1">
                   <div>
                     Circulating Supply
-                    <b>{{ data.circulating_supply.toLocaleString()  || ''}}</b>
+                    <b>{{ data.circulating_supply}}</b>
                   </div>
                   <div>
                     Total Supply
-                    <b>{{ data.total_supply.toLocaleString() || '' }}</b>
+                    <b>{{ data.total_supply }}</b>
                   </div>
                   <div>
-                    Max Supply <b>{{ data.max_supply.toLocaleString() || '' }}</b>
+                    Max Supply <b>{{ data.max_supply }}</b>
                   </div>
                 </div>
               </div>
