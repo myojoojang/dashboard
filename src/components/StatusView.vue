@@ -7,7 +7,7 @@
         <div style="width: 30%">
           <chart-card
             v-if="capChartLoaded"
-            :name="'Market Caps'"
+            :name="'Market Cap'"
             :chartdata="capChartData"
             :charttype="4"
           />
