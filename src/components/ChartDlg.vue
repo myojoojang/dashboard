@@ -54,9 +54,9 @@
                   <div class="text-right pa-2">
                     <v-chip dark x-small outlined>24h</v-chip>
                     Low
-                    <b class="mr-2">{{ data.low_24h}}</b>
+                    <b class="mr-2">{{ data.low_24h |toThousandFilter }}</b>
                     High
-                    <b>{{ data.high_24h }}</b>
+                    <b>{{ data.high_24h |toThousandFilter }}</b>
                   </div>
                 </div>
               </div>
@@ -65,8 +65,8 @@
                 <div class="my-1">
                   Market Cap
                   <div>
-                    <b>{{ data.market_cap}}</b>
-                    <!-- {{ data.market_cap_change_24h }} -->
+                    <b>{{ data.market_cap |toThousandFilter }}</b>
+                    <!-- {{ data.market_cap_change_24h |toThousandFilter }} -->
 
                     <v-chip
                       class="mb-3 ma-1"
@@ -83,21 +83,21 @@
                 <div class="my-1">
                   Total Volume
                   <div>
-                    <b>{{ data.total_volume }}</b>
+                    <b>{{ data.total_volume |toThousandFilter }}</b>
                   </div>
                 </div>
 
                 <div class="my-1">
                   <div>
                     Circulating Supply
-                    <b>{{ data.circulating_supply}}</b>
+                    <b>{{ data.circulating_supply |toThousandFilter }}</b>
                   </div>
                   <div>
                     Total Supply
-                    <b>{{ data.total_supply }}</b>
+                    <b>{{ data.total_supply |toThousandFilter }}</b>
                   </div>
                   <div>
-                    Max Supply <b>{{ data.max_supply }}</b>
+                    Max Supply <b>{{ data.max_supply |toThousandFilter }}</b>
                   </div>
                 </div>
               </div>
