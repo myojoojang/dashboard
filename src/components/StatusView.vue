@@ -94,7 +94,7 @@
         v-if="showDlg"
         :compare-req="compareReq"
         :prop-data="propData"
-        @close-dlg="showDlg = false"
+        @close-dlg="(showDlg = false)+(init())"
       />
     </v-dialog>
   </div>
@@ -173,6 +173,8 @@ export default {
       }
     },
     init() {
+    this.propData = null;
+      this.compareReq = false;
       this.isTableReady = false;
       this.supplyChartLoaded = false;
       this.volumeChartLoaded = false;
@@ -450,8 +452,7 @@ export default {
       this.isTableReady = true;
     },
     setDetailBtn(params) {
-      this.propData = null;
-      this.compareReq = false;
+      
       const btnContainer = document.createElement("div");
       btnContainer.innerHTML =
         '<button type="button" class="v-btn v-btn--fab v-btn--round theme--light v-size--x-small primary--text btn-detail"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-magnify theme--light"></i></span></button> ';
