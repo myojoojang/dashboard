@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card height="100%" class="mt-2 pa-4" min-height="250px">
-      <title-card :name="`Cryptocurrency of ${dt}`" />
+      <title-card :name="`Dashboard | ${dt}`" />
       <v-divider class="my-4" />
       <div class="d-flex flex-wrap justify-space-between">
         <div style="width: 30%">
