@@ -38,7 +38,7 @@
                 <div class="">
                   Current Price
                   <span class="display-1">{{
-                    data.current_price
+                    data.current_price |toThousandFilter
                   }}</span>
                   <v-chip
                     class="mb-4 ma-1"
