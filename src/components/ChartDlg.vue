@@ -17,19 +17,19 @@
 
       <template v-else>
         <div class="text-right mb-1">
-          Last update {{ propData.last_updated }}
-          <v-chip small outlined>{{ propData.currency }}</v-chip>
+          Last update {{ data.last_updated }}
+          <v-chip small outlined>{{ data.currency }}</v-chip>
         </div>
         <v-sheet rounded color="primary" class="white--text mb-8 pa-4">
           <div class="d-flex">
             <div style="width: 100%" class="mx-4">
               <div class="d-flex flex-wrap align-center justify-space-between">
                 <v-img
-                  :src="propData.image"
+                  :src="data.image"
                   max-width="50px"
                   max-height="50px"
                 />
-                <h1 class="white--text ma-2">{{ propData.name }}</h1>
+                <h1 class="white--text ma-2">{{ data.name }}</h1>
 
                 <v-chip small color="white"
                   >#{{ propData.market_cap_rank }}</v-chip
@@ -38,25 +38,25 @@
                 <div class="">
                   Current Price
                   <span class="display-1">{{
-                    propData.current_price.toLocaleString()
+                    data.current_price.toLocaleString()
                   }}</span>
                   <v-chip
                     class="mb-4 ma-1"
                     small
                     :color="
-                      propData.price_change_percentage_24h > 0
+                      data.price_change_percentage_24h > 0
                         ? 'success'
                         : 'error'
                     "
-                    >{{ propData.price_change_percentage_24h }}%
+                    >{{ data.price_change_percentage_24h }}%
                   </v-chip>
                   <v-divider dark />
                   <div class="text-right pa-2">
                     <v-chip dark x-small outlined>24h</v-chip>
                     Low
-                    <b class="mr-2">{{ propData.low_24h.toLocaleString() }}</b>
+                    <b class="mr-2">{{ data.low_24h.toLocaleString() }}</b>
                     High
-                    <b>{{ propData.high_24h.toLocaleString() }}</b>
+                    <b>{{ data.high_24h.toLocaleString() }}</b>
                   </div>
                 </div>
               </div>
@@ -65,39 +65,39 @@
                 <div class="my-1">
                   Market Cap
                   <div>
-                    <b>{{ propData.market_cap.toLocaleString() }}</b>
-                    <!-- {{ propData.market_cap_change_24h.toLocaleString() }} -->
+                    <b>{{ data.market_cap.toLocaleString() }}</b>
+                    <!-- {{ data.market_cap_change_24h.toLocaleString() }} -->
 
                     <v-chip
                       class="mb-3 ma-1"
                       small
                       :color="
-                        propData.price_change_percentage_24h > 0
+                        data.price_change_percentage_24h > 0
                           ? 'success'
                           : 'error'
                       "
-                      >{{ propData.market_cap_change_percentage_24h }} %</v-chip
+                      >{{ data.market_cap_change_percentage_24h }} %</v-chip
                     >
                   </div>
                 </div>
                 <div class="my-1">
                   Total Volume
                   <div>
-                    <b>{{ propData.total_volume.toLocaleString() }}</b>
+                    <b>{{ data.total_volume.toLocaleString() }}</b>
                   </div>
                 </div>
 
                 <div class="my-1">
                   <div>
                     Circulating Supply
-                    <b>{{ propData.circulating_supply.toLocaleString() }}</b>
+                    <b>{{ data.circulating_supply.toLocaleString() }}</b>
                   </div>
                   <div>
                     Total Supply
-                    <b>{{ propData.total_supply.toLocaleString() }}</b>
+                    <b>{{ data.total_supply.toLocaleString() }}</b>
                   </div>
                   <div>
-                    Max Supply <b>{{ propData.max_supply.toLocaleString() }}</b>
+                    Max Supply <b>{{ data.max_supply.toLocaleString() }}</b>
                   </div>
                 </div>
               </div>
@@ -106,7 +106,7 @@
             <v-sheet outlined min-width="300px" class="mx-4">
               <h4 class="ma-2 primary--text">Price in 7 days</h4>
               <v-sparkline
-                :value="propData.sparkline_in_7d.price"
+                :value="data.sparkline_in_7d.price"
                 color="primary"
                 line-width="1"
                 padding="16"
@@ -116,7 +116,7 @@
         </v-sheet>
 
         <title-card
-          :name="`${propData.name} - Market data of Last ${selPeriod} days `"
+          :name="`${data.name} - Market data of Last ${selPeriod} days `"
         />
 
         <v-divider class="my-4" />
@@ -174,10 +174,12 @@ export default {
       totalChart: {},
       lineChartLoaded: false,
       timestampChartData: {},
+      data:null
     };
   },
 
   created() {
+  this.data=this.propData
     if (!this.compareReq) {
       this.init();
     } else {
@@ -194,7 +196,6 @@ export default {
         )
         .then((res) => {
           const data = res.data;
-
           this.setChartData(data);
         })
         .catch((err) => {
