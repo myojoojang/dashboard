@@ -1,7 +1,7 @@
 <template>
   <v-card class="br-none">
     <v-toolbar dense flat class="pa-0 d-flex justify-center">
-      <v-btn outlined fab x-small color="primary" @click="$emit('close-dlg')">
+      <v-btn outlined fab x-small color="primary" @click="(propData=null)+(data=null)+($emit('close-dlg'))">
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </v-toolbar>
