@@ -65,7 +65,7 @@
                 <div class="my-1">
                   Market Cap
                   <div>
-                    <b>{{ data.market_cap.toLocaleString() }}</b>
+                    <b>{{ data.market_cap.toLocaleString() || '' }}</b>
                     <!-- {{ data.market_cap_change_24h.toLocaleString() || '' }} -->
 
                     <v-chip
