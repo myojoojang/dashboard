@@ -8,7 +8,7 @@ Vue.use(Router)
 import MainIndex from './components/base/MainIndex'
 // import GuideView from './components/GuideView'
 import StatusView from './components/StatusView'
-import personalView from './components/personalView'
+import PersonalView from './components/PersonalView'
 
 
 export default new Router({
@@ -28,7 +28,7 @@ export default new Router({
         {
           path: 'personal',
           name: 'Personal',
-          component: personalView,
+          component: PersonalView,
         },
 
       ],

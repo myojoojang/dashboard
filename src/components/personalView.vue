@@ -103,7 +103,7 @@ import AgGrid from "./partial/AgGrid.vue";
 
 export default {
   components: { TitleCard, ChartCard, AgGrid },
-  name: "CampaignView",
+  name: "PersonalView",
   data() {
     return {
       Crryptos: [],
