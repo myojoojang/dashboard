@@ -47,7 +47,7 @@
           <v-chip close outlined color="primary" class="mx-1">필터링</v-chip>
         </v-card> -->
 
-    <v-card height="100vh" class="mt-2">
+    <v-card height="100vh" class="mt-2 py-1">
       <div class="d-flex flex-wrap justify-space-between align-center">
         <div style="width: 300px">
           <v-tabs v-model="tab" @change="tabChange" class="pa-2 pb-0">
@@ -69,7 +69,7 @@
             />
           </div>
           <v-btn class="mx-4" color="primary" @click="getRowDataFromGrid">
-            <v-icon small class="mr-2">mdi-checkbox-marked</v-icon>Compare
+            <v-icon small class="mr-2">mdi-checkbox-marked</v-icon>Comparison
           </v-btn>
         </div>
       </div>
