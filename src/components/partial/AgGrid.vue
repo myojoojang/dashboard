@@ -30,7 +30,7 @@ export default {
   components: { AgGridVue },
   props: {
     columndefs: { type: Array, default: null },
-    rowdata: { type: Array, default: null },
+    rowdata: { type: Array, default: null }
   },
   data() {
     return {
@@ -43,23 +43,23 @@ export default {
       selectedItem: null,
 
       tmpArr: [],
-      selectedRow: [],
+      selectedRow: []
     };
   },
 
   created() {
     this.gridOptions = {
-      onRowClicked: (event) => {
+      onRowClicked: event => {
         this.emmitRowData(event.data);
         this.tmpArr.push(event.data);
-      },
+      }
     };
     this.defaultColDef = {
       filter: true,
       sortable: true,
       resizable: true,
       suppressHorizontalScroll: false,
-      suppressSizeToFit: false,
+      suppressSizeToFit: false
     };
     // this.paginationPageSize = this.auItemsPerPage;
     this.rowSelection = "multiple";
@@ -96,14 +96,14 @@ export default {
 
     getSelectedRowData() {
       const selectedNodes = this.gridApi.getSelectedNodes();
-      const selectedData = selectedNodes.map((node) => node.data);
+      const selectedData = selectedNodes.map(node => node.data);
       this.$emit("selected-data", selectedData);
     },
 
     emmitRowData(data) {
       this.$emit("emmit-data", data);
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="scss">

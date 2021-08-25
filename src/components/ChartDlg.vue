@@ -149,7 +149,7 @@
 </template>
 
 <script>
-import { API_URL, PRIMARY_COLOR } from "../globalVars";
+import { API_URL, PRIMARY_COLOR } from "../GlobalVars";
 import ChartCard from "./partial/ChartCard";
 import axios from "axios";
 import TitleCard from "./partial/TitleCard.vue";

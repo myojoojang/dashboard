@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card height="100%" class="mt-2 pa-4" min-height="250px">
-      <title-card :name="`Dashboard | ${dt}`" />
+      <title-card :name="`${dt}`" />
       <v-divider class="my-4" />
       <div class="d-flex flex-wrap justify-space-between">
         <div style="width: 30%">
@@ -47,7 +47,7 @@
           <v-chip close outlined color="primary" class="mx-1">필터링</v-chip>
         </v-card> -->
 
-    <v-card height="100vh" class="mt-2 py-1">
+    <v-card height="100vh" class="mt-2 py-0">
       <div class="d-flex flex-wrap justify-space-between align-center">
         <div style="width: 300px">
           <v-tabs v-model="tab" @change="tabChange" class="pa-2 pb-0">
@@ -73,15 +73,16 @@
           </v-btn>
         </div>
       </div>
-      <ag-grid
-        ref="data1"
-        v-if="isTableReady"
-        style="height: 90%"
-        :columndefs="headers"
-        :rowdata="rowData"
-        class="pb-4"
-        @selected-data="selectedData"
-      />
+      <div style="height: 95vh">
+        <ag-grid
+          ref="data1"
+          v-if="isTableReady"
+          style="height: 90vh"
+          :columndefs="headers"
+          :rowdata="rowData"
+          @selected-data="selectedData"
+        />
+      </div>
     </v-card>
     <v-dialog
       v-model="showDlg"
@@ -94,7 +95,7 @@
         v-if="showDlg"
         :compare-req="compareReq"
         :prop-data="propData"
-        @close-dlg="(showDlg = false)+(init())"
+        @close-dlg="(showDlg = false) + init()"
       />
     </v-dialog>
   </div>
@@ -106,7 +107,7 @@ import ChartCard from "./partial/ChartCard";
 // import TitleCard from "./partial/TitleCard.vue";
 import ChartDlg from "./ChartDlg";
 
-import { API_URL } from "../globalVars";
+import { API_URL } from "../GlobalVars";
 import axios from "axios";
 import TitleCard from "./partial/TitleCard.vue";
 
@@ -117,7 +118,7 @@ export default {
     // TitleCard,
     AgGrid,
     ChartDlg,
-    TitleCard,
+    TitleCard
   },
 
   created() {
@@ -130,7 +131,7 @@ export default {
       tabs: [
         { name: "all", id: 1 },
         { name: "Rise", id: 2 },
-        { name: "Drop", id: 3 },
+        { name: "Drop", id: 3 }
       ],
       dt: "",
       Currencies: [],
@@ -154,7 +155,7 @@ export default {
 
       showDlg: false,
       propData: null,
-      compareReq: false,
+      compareReq: false
     };
   },
   methods: {
@@ -164,16 +165,16 @@ export default {
         this.rowData = this.allCryptos;
       } else if (this.tab === 1) {
         this.rowData = this.allCryptos.filter(
-          (c) => c.price_change_percentage_24h > 0
+          c => c.price_change_percentage_24h > 0
         );
       } else if (this.tab === 2) {
         this.rowData = this.allCryptos.filter(
-          (c) => c.price_change_percentage_24h < 0
+          c => c.price_change_percentage_24h < 0
         );
       }
     },
     init() {
-    this.propData = null;
+      this.propData = null;
       this.compareReq = false;
       this.isTableReady = false;
       this.supplyChartLoaded = false;
@@ -220,7 +221,7 @@ export default {
           backgroundColor: "transparent",
           borderWidth: 1,
           pointRadius: 1,
-          pointHoverRadius: 1,
+          pointHoverRadius: 1
         });
       }
       const calcDate = new Date(new Date().setDate(new Date().getDate() - 7));
@@ -236,7 +237,7 @@ export default {
 
       const timestampChartData = {
         labels: arr,
-        datasets: datasets,
+        datasets: datasets
       };
 
       // console.log(timestampChartData);
@@ -252,7 +253,7 @@ export default {
       const data = {
         labels: [],
         datasets: [],
-        color: [],
+        color: []
       };
 
       for (let el of this.allCryptos) {
@@ -287,7 +288,7 @@ export default {
       const data = {
         labels: [],
         datasets: [],
-        color: [],
+        color: []
       };
 
       for (let el of this.allCryptos) {
@@ -304,7 +305,7 @@ export default {
       const data = {
         labels: [],
         datasets: [],
-        color: [],
+        color: []
       };
 
       for (let el of this.allCryptos) {
@@ -325,9 +326,9 @@ export default {
             data: data.datasets,
             backgroundColor: data.color,
             borderWidth: 0.5,
-            hoverBackgroundColor: data.color,
-          },
-        ],
+            hoverBackgroundColor: data.color
+          }
+        ]
       };
 
       return chartData;
@@ -339,47 +340,47 @@ export default {
           checkboxSelection: true,
           suppressMenu: true,
           sortable: false,
-          width: 50,
+          width: 50
         },
 
         {
           headerName: "#",
           field: "market_cap_rank",
-          width: 80,
+          width: 80
         },
         {
           headerName: "",
           field: "image",
-          cellRenderer: (params) => {
+          cellRenderer: params => {
             const url = params.data.image;
 
             return `<img style="width:20px; height:20px;" src="${url}"/>`;
           },
 
           width: 80,
-          suppressMenu: true,
+          suppressMenu: true
         },
 
         {
           headerName: "Name",
-          field: "name",
+          field: "name"
         },
         {
           headerName: "Current Price",
           field: "current_price",
-          cellRenderer: (params) => {
+          cellRenderer: params => {
             const usd = params.data.current_price;
             return `<span class="small-text grey--text">${
               this.selCurrency
             }</span> ${usd.toLocaleString()}`;
           },
 
-          type: "rightAligned",
+          type: "rightAligned"
         },
         {
           headerName: "Rise and Drop Rate last 24h",
           field: "price_change_percentage_24h",
-          cellRenderer: (params) => {
+          cellRenderer: params => {
             const per = params.data.price_change_percentage_24h;
             if (per < 0) {
               return `<span class="error--text">${per.toFixed(
@@ -391,81 +392,80 @@ export default {
               )}%  <i aria-hidden="true" class="v-icon notranslate mdi v-size--x-small mdi-arrow-up-drop-circle theme--light success--text"></i></span>`;
             }
           },
-          type: "rightAligned",
+          type: "rightAligned"
         },
         {
           headerName: "Highest last 24h",
           field: "high_24h",
           type: "rightAligned",
-          cellRenderer: (params) => {
+          cellRenderer: params => {
             const usd = params.data.high_24h;
             return `<span class="small-text grey--text">${
               this.selCurrency
             }</span> ${usd.toLocaleString()}`;
-          },
+          }
         },
         {
           headerName: "Lowest last 24h",
           field: "low_24h",
           type: "rightAligned",
-          cellRenderer: (params) => {
+          cellRenderer: params => {
             const usd = params.data.low_24h;
             return `<span class="small-text grey--text">${
               this.selCurrency
             }</span> ${usd.toLocaleString()}`;
-          },
+          }
         },
 
         {
           headerName: "Market Cap",
           field: "market_cap",
           type: "rightAligned",
-          cellRenderer: (params) => {
+          cellRenderer: params => {
             const cap = params.data.market_cap;
             return cap.toLocaleString();
-          },
+          }
         },
         {
           headerName: "Circulating Supply",
           field: "circulating_supply",
           type: "rightAligned",
-          cellRenderer: (params) => {
+          cellRenderer: params => {
             const sup = params.data.circulating_supply;
             return sup.toLocaleString();
-          },
+          }
         },
 
         {
-          headerName: "",
-          field: "job",
-          cellRenderer: (params) => {
+          headerName: "Show more",
+          field: "actions",
+          cellRenderer: params => {
             const button = this.setDetailBtn(params);
             return button;
           },
           suppressMenu: true,
           type: "rightAligned",
-          width: 80,
-        },
+          width: 100
+        }
       ];
       this.headers = headers;
       this.rowData = data;
       this.isTableReady = true;
     },
     setDetailBtn(params) {
-      
       const btnContainer = document.createElement("div");
       btnContainer.innerHTML =
         '<button type="button" class="v-btn v-btn--fab v-btn--round theme--light v-size--x-small primary--text btn-detail"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-magnify theme--light"></i></span></button> ';
       const detailButton = btnContainer.querySelector(".btn-detail");
 
       const cur = this;
-      detailButton.addEventListener("click", function () {
+      detailButton.addEventListener("click", function() {
         cur.showDlg = true;
         params.data.currency = cur.selCurrency;
         cur.propData = params.data;
       });
       return btnContainer;
-    },
-  },
+    }
+  }
 };
 </script>
