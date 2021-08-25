@@ -21,9 +21,6 @@
 
 <script>
 import { AgGridVue } from "ag-grid-vue";
-// import {
-//   _gridLocalText,
-// } from '@/GlobalVars'
 
 export default {
   name: "AgGrid",
