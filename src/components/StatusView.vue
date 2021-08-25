@@ -47,7 +47,7 @@
           <v-chip close outlined color="primary" class="mx-1">필터링</v-chip>
         </v-card> -->
 
-    <v-card height="100vh" class="mt-2 py-0">
+    <v-card height="150vh" class="mt-2 py-0">
       <div class="d-flex flex-wrap justify-space-between align-center">
         <div style="width: 300px">
           <v-tabs v-model="tab" @change="tabChange" class="pa-2 pb-0">
@@ -73,11 +73,11 @@
           </v-btn>
         </div>
       </div>
-      <div style="height: 95vh">
+      <div style="height: 145vh">
         <ag-grid
           ref="data1"
           v-if="isTableReady"
-          style="height: 90vh"
+          style="height: 140vh"
           :columndefs="headers"
           :rowdata="rowData"
           @selected-data="selectedData"
