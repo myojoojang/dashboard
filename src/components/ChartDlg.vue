@@ -149,12 +149,8 @@
 </template>
 
 <script>
-<<<<<<< HEAD
-import { API_URL, PRIMARY_COLOR } from "../GlobalVars";
-=======
 const API_URL = "https://api.coingecko.com/api/v3";
 
->>>>>>> 1a8e1c461e77e1caa92c6ce9ee298eba04198c83
 import ChartCard from "./partial/ChartCard";
 import axios from "axios";
 import TitleCard from "./partial/TitleCard.vue";
@@ -162,12 +158,12 @@ export default {
   name: "ChartDlg",
   components: {
     ChartCard,
-    TitleCard
+    TitleCard,
   },
 
   props: {
     compareReq: { type: Boolean, default: false },
-    propData: null
+    propData: null,
   },
 
   data() {
@@ -179,7 +175,7 @@ export default {
       totalChart: {},
       lineChartLoaded: false,
       timestampChartData: {},
-      data: null
+      data: null,
     };
   },
 
@@ -199,11 +195,11 @@ export default {
         .get(
           `${API_URL}/coins/${this.propData.id}/market_chart?vs_currency=${this.propData.currency}&days=${this.selPeriod}`
         )
-        .then(res => {
+        .then((res) => {
           const data = res.data;
           this.setChartData(data);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     },
@@ -217,7 +213,7 @@ export default {
           backgroundColor: "transparent",
           borderWidth: 1,
           pointRadius: 1,
-          pointHoverRadius: 1
+          pointHoverRadius: 1,
         });
       }
       const calcDate = new Date(new Date().setDate(new Date().getDate() - 7));
@@ -233,7 +229,7 @@ export default {
 
       const timestampChartData = {
         labels: arr,
-        datasets: datasets
+        datasets: datasets,
       };
 
       // console.log(timestampChartData);
@@ -268,7 +264,7 @@ export default {
     setDatasets(data) {
       const tmpArr = {
         labels: [],
-        datasets: []
+        datasets: [],
       };
       for (const [index, value] of data.entries()) {
         const per = index - this.selPeriod;
@@ -292,14 +288,14 @@ export default {
             borderWidth: 1,
             pointBackgroundColor: "#0f2d61",
             pointRadius: 1,
-            pointHoverRadius: 2
-          }
-        ]
+            pointHoverRadius: 2,
+          },
+        ],
       };
 
       return chartData;
-    }
-  }
+    },
+  },
 };
 </script>
 

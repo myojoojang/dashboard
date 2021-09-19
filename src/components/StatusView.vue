@@ -35,17 +35,11 @@
         <chart-card
           v-if="lineChartLoaded"
           :name="'Top 10 Cryptocurrency (last 7days)'"
-          :chartdata="timestampChartData"
-          :charttype="2"
+          :chartdata="topTenCurrencyData"
+          :charttype="5"
         />
       </div>
     </v-card>
-
-    <!-- <v-card class="d-flex flex-wrap">
-          <v-icon>mdi-filter</v-icon>
-          <v-chip color="primary">전체</v-chip>
-          <v-chip close outlined color="primary" class="mx-1">필터링</v-chip>
-        </v-card> -->
 
     <v-card height="150vh" class="mt-2 py-0">
       <div class="d-flex flex-wrap justify-space-between align-center">
@@ -151,7 +145,7 @@ export default {
       capChartLoaded: false,
       capChartData: null,
 
-      timestampChartData: null,
+      topTenCurrencyData: null,
       lineChartLoaded: false,
 
       showDlg: false,
@@ -236,17 +230,17 @@ export default {
         arr.push(new Date(dt).toLocaleString());
       }
 
-      const timestampChartData = {
+      const topTenCurrencyData = {
         labels: arr,
         datasets: datasets,
       };
 
-      // console.log(timestampChartData);
+      // console.log(topTenCurrencyData);
 
-      this.showTimestampChart(timestampChartData);
+      this.showTimestampChart(topTenCurrencyData);
     },
     showTimestampChart(dataSet) {
-      this.timestampChartData = dataSet;
+      this.topTenCurrencyData = dataSet;
       this.lineChartLoaded = true;
     },
 
@@ -438,7 +432,7 @@ export default {
         },
 
         {
-          headerName: "Show more",
+          headerName: "Details",
           field: "actions",
           cellRenderer: (params) => {
             const button = this.setDetailBtn(params);

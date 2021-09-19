@@ -4,9 +4,6 @@ a {
 }
 
 body {
-  height: 100%;
-  /* background: linear-gradient(90deg, #FFC0CB 50%, #00FFFF 50%); */
-
   background: linear-gradient(
     180deg,
     #0f2d61 500px,
@@ -24,6 +21,7 @@ body .v-application {
   font-weight: 400;
   font-size: 0.95rem;
 }
+
 .small-text {
   font-size: 0.8rem;
 }
