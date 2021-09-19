@@ -6,15 +6,17 @@ a {
 body {
   height: 100%;
   /* background: linear-gradient(90deg, #FFC0CB 50%, #00FFFF 50%); */
-}
 
-.theme--light.v-application {
   background: linear-gradient(
     180deg,
     #0f2d61 300px,
     #d3d4e0 0,
     #d3d4e0 100%
   ) !important;
+}
+
+.theme--light.v-application {
+  background: transparent !important;
 }
 
 body .v-application {

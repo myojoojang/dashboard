@@ -106,7 +106,7 @@ import ChartCard from "./partial/ChartCard";
 // import TitleCard from "./partial/TitleCard.vue";
 import ChartDlg from "./ChartDlg";
 
-import { API_URL } from "../globalVars";
+import { API_URL } from "../GlobalVars";
 import axios from "axios";
 import TitleCard from "./partial/TitleCard.vue";
 
