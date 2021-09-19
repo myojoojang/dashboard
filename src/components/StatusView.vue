@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card height="100%" class="mt-2 pa-4" min-height="250px">
-      <title-card :name="`Dashboard | ${dt}`" />
+      <title-card :name="`${dt}`" />
       <v-divider class="my-4" />
       <div class="d-flex flex-wrap justify-space-between">
         <div style="width: 30%">
@@ -47,7 +47,7 @@
           <v-chip close outlined color="primary" class="mx-1">필터링</v-chip>
         </v-card> -->
 
-    <v-card height="100vh" class="mt-2 py-1">
+    <v-card height="150vh" class="mt-2 py-0">
       <div class="d-flex flex-wrap justify-space-between align-center">
         <div style="width: 300px">
           <v-tabs v-model="tab" @change="tabChange" class="pa-2 pb-0">
@@ -73,15 +73,16 @@
           </v-btn>
         </div>
       </div>
-      <ag-grid
-        ref="data1"
-        v-if="isTableReady"
-        style="height: 90%"
-        :columndefs="headers"
-        :rowdata="rowData"
-        class="pb-4"
-        @selected-data="selectedData"
-      />
+      <div style="height: 145vh">
+        <ag-grid
+          ref="data1"
+          v-if="isTableReady"
+          style="height: 140vh"
+          :columndefs="headers"
+          :rowdata="rowData"
+          @selected-data="selectedData"
+        />
+      </div>
     </v-card>
     <v-dialog
       v-model="showDlg"
@@ -94,7 +95,7 @@
         v-if="showDlg"
         :compare-req="compareReq"
         :prop-data="propData"
-        @close-dlg="(showDlg = false)+(init())"
+        @close-dlg="(showDlg = false) + init()"
       />
     </v-dialog>
   </div>
@@ -106,7 +107,8 @@ import ChartCard from "./partial/ChartCard";
 // import TitleCard from "./partial/TitleCard.vue";
 import ChartDlg from "./ChartDlg";
 
-import { API_URL } from "../GlobalVars";
+const API_URL = "https://api.coingecko.com/api/v3";
+
 import axios from "axios";
 import TitleCard from "./partial/TitleCard.vue";
 
@@ -173,7 +175,7 @@ export default {
       }
     },
     init() {
-    this.propData = null;
+      this.propData = null;
       this.compareReq = false;
       this.isTableReady = false;
       this.supplyChartLoaded = false;
@@ -436,15 +438,15 @@ export default {
         },
 
         {
-          headerName: "",
-          field: "job",
+          headerName: "Show more",
+          field: "actions",
           cellRenderer: (params) => {
             const button = this.setDetailBtn(params);
             return button;
           },
           suppressMenu: true,
           type: "rightAligned",
-          width: 80,
+          width: 100,
         },
       ];
       this.headers = headers;
@@ -452,7 +454,6 @@ export default {
       this.isTableReady = true;
     },
     setDetailBtn(params) {
-      
       const btnContainer = document.createElement("div");
       btnContainer.innerHTML =
         '<button type="button" class="v-btn v-btn--fab v-btn--round theme--light v-size--x-small primary--text btn-detail"><span class="v-btn__content"><i aria-hidden="true" class="v-icon notranslate mdi mdi-magnify theme--light"></i></span></button> ';

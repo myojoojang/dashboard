@@ -45,35 +45,35 @@ export default {
     BarChart,
     LineChart,
     HorizontalBarChart,
-    DoughnutChart,
+    DoughnutChart
   },
   props: {
     name: {
       type: String,
-      default: "차트",
+      default: "차트"
     },
     charttype: {
       type: Number,
-      default: 4,
+      default: 4
     },
     options: {
       type: Object,
-      default: null,
+      default: null
     },
     chartdata: {
       type: Object,
-      default: null,
-    },
+      default: null
+    }
   },
 
   data() {
     return {
       timestampChartOptions: {
         legend: {
-          display: true,
+          display: true
         },
         tooltips: {
-          displayColors: false,
+          displayColors: false
         },
         scales: {
           yAxes: [
@@ -82,40 +82,40 @@ export default {
               ticks: {
                 fontSize: 9,
                 beginAtZero: false,
-                callback: (value) => {
+                callback: value => {
                   if (value >= 1000) {
                     return Intl.NumberFormat().format(value / 1000) + "k";
                   } else {
                     return value;
                   }
-                },
+                }
               },
               gridLines: {
-                display: true,
-              },
-            },
+                display: true
+              }
+            }
           ],
           xAxes: [
             {
               stacked: false,
               gridLines: {
-                display: false,
+                display: false
               },
               ticks: {
                 fontSize: 9,
                 autoSkip: true,
                 autoSkipPadding: 20,
-                maxRotation: 0,
-              },
-            },
-          ],
+                maxRotation: 0
+              }
+            }
+          ]
         },
         responsive: true,
         maintainAspectRatio: false,
         animation: {
-          duration: 0,
+          duration: 0
         },
-        spanGaps: false,
+        spanGaps: false
       },
       lineChartOptions: {
         legend: {
@@ -123,11 +123,11 @@ export default {
           labels: {
             usePointStyle: false,
             fontSize: 10,
-            boxWidth: 10,
-          },
+            boxWidth: 10
+          }
         },
         tooltips: {
-          displayColors: true,
+          displayColors: true
         },
         scales: {
           yAxes: [
@@ -136,51 +136,53 @@ export default {
               ticks: {
                 fontSize: 9,
                 beginAtZero: false,
-                callback: (value) => {
+                callback: value => {
                   if (value >= 1000) {
                     return Intl.NumberFormat().format(value / 1000) + "k";
                   } else {
                     return value;
                   }
-                },
+                }
               },
               gridLines: {
-                display: true,
-              },
-            },
+                display: true
+              }
+            }
           ],
           xAxes: [
             {
               diaplay: false,
               stacked: false,
               gridLines: {
-                display: false,
+                display: false
               },
               ticks: {
                 fontSize: 9,
                 autoSkip: true,
                 autoSkipPadding: 20,
-                maxRotation: 0,
-              },
-            },
-          ],
+                maxRotation: 0
+              }
+            }
+          ]
         },
         responsive: true,
         maintainAspectRatio: false,
         animation: {
-          duration: 0,
-        },
+          duration: 0
+        }
       },
       donutChartOptions: {
+        // transparencyEffects: true,
+        // dataSetBorderWidth: 2,
+        // legend:{ display: true, fullWidth:true, position: 'right', labels:{boxWidth:40, fontSize:12, fontStyle':'normal', 'fontColor':'#666', 'usePointStyle':false}},
         legend: {
-          maxWidth: "200px",
           display: false,
           position: "right",
           labels: {
             fontColor: "#46484b",
             usePointStyle: true,
-            fontSize: 9,
-          },
+            fontSize: 9
+          }
         },
         tooltips: {
           displayColors: true,
@@ -192,17 +194,17 @@ export default {
               ].toLocaleString();
               const tooltip = dataLabel + " : " + value;
               return tooltip;
-            },
-          },
+            }
+          }
         },
         responsive: true,
         maintainAspectRatio: false,
         animation: {
-          duration: 0,
-        },
-      },
+          duration: 0
+        }
+      }
     };
-  },
+  }
 };
 </script>
 
@@ -210,10 +212,10 @@ export default {
 <style lang="scss" scoped>
 .chart-container {
   flex-grow: 1;
-  min-height: 150px;
+  min-height: 250px;
   > div {
     position: relative;
-    height: 25vh;
+    height: 30vh;
     padding-left: 0;
   }
 }

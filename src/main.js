@@ -10,7 +10,6 @@ Object.keys(filters).forEach(key => {
 })
 Vue.prototype.$filters = Vue.options.filters
 
-
 Vue.config.productionTip = false
 
 new Vue({

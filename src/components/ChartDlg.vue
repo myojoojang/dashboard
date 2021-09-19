@@ -1,7 +1,13 @@
 <template>
   <v-card class="br-none">
     <v-toolbar dense flat class="pa-0 d-flex justify-center">
-      <v-btn outlined fab x-small color="primary" @click="(propData=null)+(data=null)+($emit('close-dlg'))">
+      <v-btn
+        outlined
+        fab
+        x-small
+        color="primary"
+        @click="(propData = null) + (data = null) + $emit('close-dlg')"
+      >
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </v-toolbar>
@@ -24,11 +30,7 @@
           <div class="d-flex">
             <div style="width: 100%" class="mx-4">
               <div class="d-flex flex-wrap align-center justify-space-between">
-                <v-img
-                  :src="data.image"
-                  max-width="50px"
-                  max-height="50px"
-                />
+                <v-img :src="data.image" max-width="50px" max-height="50px" />
                 <h1 class="white--text ma-2">{{ data.name }}</h1>
 
                 <v-chip small color="white"
@@ -38,15 +40,13 @@
                 <div class="">
                   Current Price
                   <span class="display-1">{{
-                    data.current_price |toThousandFilter
+                    data.current_price | toThousandFilter
                   }}</span>
                   <v-chip
                     class="mb-4 ma-1"
                     small
                     :color="
-                      data.price_change_percentage_24h > 0
-                        ? 'success'
-                        : 'error'
+                      data.price_change_percentage_24h > 0 ? 'success' : 'error'
                     "
                     >{{ data.price_change_percentage_24h }}%
                   </v-chip>
@@ -54,9 +54,9 @@
                   <div class="text-right pa-2">
                     <v-chip dark x-small outlined>24h</v-chip>
                     Low
-                    <b class="mr-2">{{ data.low_24h |toThousandFilter }}</b>
+                    <b class="mr-2">{{ data.low_24h | toThousandFilter }}</b>
                     High
-                    <b>{{ data.high_24h |toThousandFilter }}</b>
+                    <b>{{ data.high_24h | toThousandFilter }}</b>
                   </div>
                 </div>
               </div>
@@ -65,7 +65,7 @@
                 <div class="my-1">
                   Market Cap
                   <div>
-                    <b>{{ data.market_cap |toThousandFilter }}</b>
+                    <b>{{ data.market_cap | toThousandFilter }}</b>
                     <!-- {{ data.market_cap_change_24h |toThousandFilter }} -->
 
                     <v-chip
@@ -83,21 +83,21 @@
                 <div class="my-1">
                   Total Volume
                   <div>
-                    <b>{{ data.total_volume |toThousandFilter }}</b>
+                    <b>{{ data.total_volume | toThousandFilter }}</b>
                   </div>
                 </div>
 
                 <div class="my-1">
                   <div>
                     Circulating Supply
-                    <b>{{ data.circulating_supply |toThousandFilter }}</b>
+                    <b>{{ data.circulating_supply | toThousandFilter }}</b>
                   </div>
                   <div>
                     Total Supply
-                    <b>{{ data.total_supply |toThousandFilter }}</b>
+                    <b>{{ data.total_supply | toThousandFilter }}</b>
                   </div>
                   <div>
-                    Max Supply <b>{{ data.max_supply |toThousandFilter }}</b>
+                    Max Supply <b>{{ data.max_supply | toThousandFilter }}</b>
                   </div>
                 </div>
               </div>
@@ -149,7 +149,12 @@
 </template>
 
 <script>
+<<<<<<< HEAD
 import { API_URL, PRIMARY_COLOR } from "../GlobalVars";
+=======
+const API_URL = "https://api.coingecko.com/api/v3";
+
+>>>>>>> 1a8e1c461e77e1caa92c6ce9ee298eba04198c83
 import ChartCard from "./partial/ChartCard";
 import axios from "axios";
 import TitleCard from "./partial/TitleCard.vue";
@@ -157,12 +162,12 @@ export default {
   name: "ChartDlg",
   components: {
     ChartCard,
-    TitleCard,
+    TitleCard
   },
 
   props: {
     compareReq: { type: Boolean, default: false },
-    propData: null,
+    propData: null
   },
 
   data() {
@@ -174,12 +179,12 @@ export default {
       totalChart: {},
       lineChartLoaded: false,
       timestampChartData: {},
-      data:null
+      data: null
     };
   },
 
   created() {
-  this.data=this.propData
+    this.data = this.propData;
     if (!this.compareReq) {
       this.init();
     } else {
@@ -194,11 +199,11 @@ export default {
         .get(
           `${API_URL}/coins/${this.propData.id}/market_chart?vs_currency=${this.propData.currency}&days=${this.selPeriod}`
         )
-        .then((res) => {
+        .then(res => {
           const data = res.data;
           this.setChartData(data);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
     },
@@ -212,7 +217,7 @@ export default {
           backgroundColor: "transparent",
           borderWidth: 1,
           pointRadius: 1,
-          pointHoverRadius: 1,
+          pointHoverRadius: 1
         });
       }
       const calcDate = new Date(new Date().setDate(new Date().getDate() - 7));
@@ -228,7 +233,7 @@ export default {
 
       const timestampChartData = {
         labels: arr,
-        datasets: datasets,
+        datasets: datasets
       };
 
       // console.log(timestampChartData);
@@ -263,7 +268,7 @@ export default {
     setDatasets(data) {
       const tmpArr = {
         labels: [],
-        datasets: [],
+        datasets: []
       };
       for (const [index, value] of data.entries()) {
         const per = index - this.selPeriod;
@@ -283,18 +288,18 @@ export default {
         datasets: [
           {
             data: data.datasets,
-            borderColor: PRIMARY_COLOR,
+            borderColor: "#0f2d61",
             borderWidth: 1,
-            pointBackgroundColor: PRIMARY_COLOR,
+            pointBackgroundColor: "#0f2d61",
             pointRadius: 1,
-            pointHoverRadius: 2,
-          },
-        ],
+            pointHoverRadius: 2
+          }
+        ]
       };
 
       return chartData;
-    },
-  },
+    }
+  }
 };
 </script>
 
