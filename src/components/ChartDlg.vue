@@ -17,7 +17,7 @@
         <chart-card
           v-if="lineChartLoaded"
           :name="`Prices (last 7days)`"
-          :chartdata="timestampChartData"
+          :chartdata="comparisonChartData"
           :charttype="5"
       /></template>
 
@@ -174,7 +174,7 @@ export default {
       markCapsChart: {},
       totalChart: {},
       lineChartLoaded: false,
-      timestampChartData: {},
+      comparisonChartData: {},
       data: null,
     };
   },
@@ -227,14 +227,14 @@ export default {
         arr.push(new Date(dt).toLocaleString());
       }
 
-      const timestampChartData = {
+      const comparisonChartData = {
         labels: arr,
         datasets: datasets,
       };
 
-      // console.log(timestampChartData);
+      // console.log(comparisonChartData);
 
-      this.showTimestampChart(timestampChartData);
+      this.showComparisonChart(comparisonChartData);
     },
     dynamicColors() {
       const h = 215;
@@ -243,8 +243,8 @@ export default {
       const color = "hsl(" + h + ", " + s + "%, " + l + "%)";
       return color;
     },
-    showTimestampChart(dataSet) {
-      this.timestampChartData = dataSet;
+    showComparisonChart(dataSet) {
+      this.comparisonChartData = dataSet;
       this.lineChartLoaded = true;
     },
     setChartData(data) {

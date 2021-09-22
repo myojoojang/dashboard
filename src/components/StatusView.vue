@@ -124,7 +124,7 @@ export default {
     return {
       tab: "",
       tabs: [
-        { name: "all", id: 1 },
+        { name: "All", id: 1 },
         { name: "Rise", id: 2 },
         { name: "Drop", id: 3 },
       ],
@@ -193,7 +193,7 @@ export default {
           this.setVolumeData();
           this.setCapData();
           this.setSupplyData();
-          this.setTimestampChart();
+          this.setTopTenChart();
         })
       );
     },
@@ -204,7 +204,7 @@ export default {
       const color = "hsl(" + h + ", " + s + "%, " + l + "%)";
       return color;
     },
-    setTimestampChart() {
+    setTopTenChart() {
       const datasets = [];
       const top10Prices = this.allCryptos.slice(0, 10);
 
@@ -237,9 +237,9 @@ export default {
 
       // console.log(topTenCurrencyData);
 
-      this.showTimestampChart(topTenCurrencyData);
+      this.showTopTenChart(topTenCurrencyData);
     },
-    showTimestampChart(dataSet) {
+    showTopTenChart(dataSet) {
       this.topTenCurrencyData = dataSet;
       this.lineChartLoaded = true;
     },
@@ -260,6 +260,7 @@ export default {
       this.volumeChartData = this.showChart(data);
       this.volumeChartLoaded = true;
     },
+
     getRowDataFromGrid() {
       this.$refs.data1.getSelectedRowData();
     },
