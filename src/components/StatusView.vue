@@ -85,7 +85,7 @@
       persistent
       transition="dialog-bottom-transition"
     >
-      <ChartDlg
+      <DetailDlg
         v-if="showDlg"
         :compare-req="compareReq"
         :prop-data="propData"
@@ -96,15 +96,14 @@
 </template>
 
 <script>
-import AgGrid from "./partial/AgGrid.vue";
+import AgGrid from "./partial/AgGrid";
 import ChartCard from "./partial/ChartCard";
-// import TitleCard from "./partial/TitleCard.vue";
-import ChartDlg from "./ChartDlg";
+import TitleCard from "./partial/TitleCard";
+import DetailDlg from "./DetailDlg";
 
 const API_URL = "https://api.coingecko.com/api/v3";
 
 import axios from "axios";
-import TitleCard from "./partial/TitleCard.vue";
 
 export default {
   name: "StatusView",
@@ -112,7 +111,7 @@ export default {
     ChartCard,
     // TitleCard,
     AgGrid,
-    ChartDlg,
+    DetailDlg,
     TitleCard,
   },
 
