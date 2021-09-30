@@ -221,6 +221,9 @@ export default {
       const calcDate = new Date(new Date().setDate(new Date().getDate() - 7));
       const end = new Date();
 
+      console.log(calcDate);
+
+      //get hourly date array
       for (
         var arr = [], dt = new Date(calcDate);
         dt <= end;
@@ -228,6 +231,8 @@ export default {
       ) {
         arr.push(new Date(dt).toLocaleString());
       }
+
+      console.log(arr);
 
       const topTenCurrencyData = {
         labels: arr,
