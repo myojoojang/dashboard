@@ -89,7 +89,7 @@
         v-if="showDlg"
         :compare-req="compareReq"
         :prop-data="propData"
-        @close-dlg="showDlg = false"
+        @close-dlg="init()+(showDlg = false)"
       />
     </v-dialog>
   </div>
