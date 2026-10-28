@@ -131,14 +131,25 @@ export default defineComponent({
           sortable: false,
           filter: false,
           pinned: 'right',
-          minWidth: 90,
-          width: 120,
+          minWidth: 200,
+          width: 200,
           cellRenderer: (params: MarketCell) => {
             const button = document.createElement('button');
 
             button.type = 'button';
-            button.className = 'market-details-button v-btn v-btn--text theme--light v-size--small primary--text';
-            button.textContent = 'Show details';
+            button.className = [
+              'market-details-button v-btn v-btn--fab v-btn--round',
+              'theme--light v-size--x-small primary--text',
+            ].join(' ');
+            const content = document.createElement('span');
+            const icon = document.createElement('i');
+
+            content.className = 'v-btn__content';
+            icon.className = 'v-icon notranslate mdi mdi-magnify theme--light';
+            icon.setAttribute('aria-hidden', 'true');
+            content.append(icon);
+            button.append(content);
+            button.title = `View ${params.data.name} details`;
             button.setAttribute(
               'aria-label',
               `View ${params.data.name} details`,
@@ -174,9 +185,7 @@ export default defineComponent({
 }
 .market-details-button {
   color: #0f2d61;
-  padding: 0 6px;
-  font-size: 0.75rem;
-  letter-spacing: normal;
+  vertical-align: middle;
 }
 .market-details-button:focus-visible {
   outline: 2px solid #0f2d61;

@@ -1,5 +1,5 @@
 import type { ChartData } from 'chart.js';
-import type { HistoryPoint, MarketItem, MarketMetric, PriceSeries } from '../types/market';
+import type { HistoryPoint, MarketItem, MarketMetric } from '../types/market';
 
 export type ChartKind = 'line' | 'bar' | 'doughnut';
 export type DashboardChartType = ChartKind | 'horizontal-bar';
@@ -30,17 +30,19 @@ export function buildMetricChart(items: MarketItem[], metric: MarketMetric): Das
   };
 }
 
-export function buildPriceChart(series: PriceSeries[]): DashboardChartData {
+export function buildSparklineChart(items: MarketItem[]): DashboardChartData {
+  const sampleCount = Math.max(0, ...items.map((item) => {
+    return item.sparkline_in_7d?.price.length ?? 0;
+  }));
+
   return {
-    datasets: series.map((item, index) => {
+    labels: Array.from({ length: sampleCount }, (_value, index) => {
+      return `Sample ${index + 1}`;
+    }),
+    datasets: items.map((item, index) => {
       return {
         label: item.name,
-        data: item.prices.map(([x, y]) => {
-          return {
-            x,
-            y,
-          };
-        }),
+        data: item.sparkline_in_7d?.price ?? [],
         borderColor: seriesColor(index),
         backgroundColor: 'transparent',
         borderWidth: 1,

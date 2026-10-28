@@ -44,9 +44,7 @@
         </dl>
       </v-sheet>
       <ChartCard
-        v-if="priceHistory.length"
-        time-axis
-        title="Price (last 7 days)"
+        title="Price (7-day trend · sample order)"
         chart-type="line"
         :chart-data="priceChart"
       />
@@ -91,16 +89,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { PropType } from 'vue';
-import type { MarketHistory, MarketItem, PriceSeries } from '@/types/market';
+import type { MarketHistory, MarketItem } from '@/types/market';
 import { marketApi } from '@/services/marketApi';
-import { buildHistoryChart, buildPriceChart } from '@/utils/formatChartData';
+import { buildHistoryChart, buildSparklineChart } from '@/utils/formatChartData';
 import type { DashboardChartData } from '@/utils/formatChartData';
 import { formatNumber, formatPercentage } from '@/utils/formatNumber';
 import ChartCard from '@/components/charts/ChartCard.vue';
 
 interface MarketDetailsState {
   history: MarketHistory | null;
-  priceHistory: PriceSeries[];
   isLoading: boolean;
   errorMessage: string;
 }
@@ -121,7 +118,6 @@ export default defineComponent({
   data(): MarketDetailsState {
     return {
       history: null,
-      priceHistory: [],
       isLoading: false,
       errorMessage: '',
     };
@@ -131,7 +127,7 @@ export default defineComponent({
       return new Date(this.item.last_updated).toLocaleString();
     },
     priceChart(): DashboardChartData {
-      return buildPriceChart(this.priceHistory);
+      return buildSparklineChart([this.item]);
     },
     statistics(): { label: string; value: string }[] {
       return [
@@ -207,13 +203,7 @@ export default defineComponent({
       this.errorMessage = '';
 
       try {
-        const [history, priceHistory] = await Promise.all([
-          marketApi.getHistory(this.item.id, this.currency),
-          marketApi.getPriceHistory([this.item], this.currency),
-        ]);
-
-        this.history = history;
-        this.priceHistory = priceHistory;
+        this.history = await marketApi.getHistory(this.item.id, this.currency);
       } catch {
         this.errorMessage = 'Couldn’t load market history. Please try again.';
       } finally {

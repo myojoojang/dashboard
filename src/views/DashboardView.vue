@@ -40,30 +40,8 @@
             />
           </v-col>
         </v-row>
-        <v-progress-linear
-          v-if="isHistoryLoading"
-          indeterminate
-          aria-label="Loading price history"
-        />
-        <v-alert
-          v-if="historyError"
-          type="error"
-          outlined
-          role="alert"
-        >
-          {{ historyError }}
-          <v-btn
-            text
-            :disabled="isHistoryLoading"
-            @click="loadPriceHistory"
-          >
-            Try again
-          </v-btn>
-        </v-alert>
         <ChartCard
-          v-if="priceHistory.length"
-          time-axis
-          title="Top 10 cryptocurrencies (last 7 days)"
+          title="Top 10 cryptocurrencies (7-day trend · sample order)"
           chart-type="line"
           :chart-data="topMarketsChart"
           show-legend
@@ -80,6 +58,7 @@
         <div class="market-tabs">
           <v-tabs
             v-model="filter"
+            show-arrows="never"
             class="pa-2 pb-0"
             @change="clearSelection"
           >
@@ -98,7 +77,7 @@
           <v-select
             v-model="currency"
             :items="currencies"
-            :disabled="isLoading || isHistoryLoading"
+            :disabled="isLoading"
             placeholder="Currency"
             aria-label="Currency"
             rounded
@@ -174,9 +153,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { MarketFilter, MarketItem, PriceSeries } from '@/types/market';
+import type { MarketFilter, MarketItem } from '@/types/market';
 import type { DashboardChartData } from '@/utils/formatChartData';
-import { buildMetricChart, buildPriceChart } from '@/utils/formatChartData';
+import { buildMetricChart, buildSparklineChart } from '@/utils/formatChartData';
 import { filterMarkets } from '@/utils/filterMarkets';
 import { marketApi } from '@/services/marketApi';
 import ChartCard from '@/components/charts/ChartCard.vue';
@@ -186,9 +165,6 @@ import MarketComparison from '@/components/market/MarketComparison.vue';
 
 interface DashboardState {
   markets: MarketItem[];
-  priceHistory: PriceSeries[];
-  historyError: string;
-  isHistoryLoading: boolean;
   currencies: string[];
   currency: string;
   filter: MarketFilter;
@@ -213,9 +189,6 @@ export default defineComponent({
   data(): DashboardState {
     return {
       markets: [],
-      priceHistory: [],
-      historyError: '',
-      isHistoryLoading: false,
       currencies: ['usd'],
       currency: 'usd',
       filter: 'all',
@@ -250,7 +223,7 @@ export default defineComponent({
       ];
     },
     topMarketsChart(): DashboardChartData {
-      return buildPriceChart(this.priceHistory);
+      return buildSparklineChart(this.markets.slice(0, 10));
     },
   },
   created() {
@@ -261,8 +234,6 @@ export default defineComponent({
       this.isLoading = true;
       this.errorMessage = '';
       this.markets = [];
-      this.priceHistory = [];
-      this.historyError = '';
       this.filter = 'all';
       this.clearSelection();
 
@@ -274,26 +245,10 @@ export default defineComponent({
         this.currencies = currencies;
         this.markets = markets;
         this.updatedAt = new Date().toLocaleString();
-        await this.loadPriceHistory();
       } catch {
         this.errorMessage = 'Couldn’t load market data. Please try again.';
       } finally {
         this.isLoading = false;
-      }
-    },
-    async loadPriceHistory(): Promise<void> {
-      this.isHistoryLoading = true;
-      this.historyError = '';
-
-      try {
-        this.priceHistory = await marketApi.getPriceHistory(
-          this.markets.slice(0, 10),
-          this.currency,
-        );
-      } catch {
-        this.historyError = 'Couldn’t load seven-day price history. Please try again.';
-      } finally {
-        this.isHistoryLoading = false;
       }
     },
     clearSelection(): void {
@@ -337,6 +292,10 @@ export default defineComponent({
 .market-tabs {
   width: 300px;
   max-width: 100%;
+}
+.market-tabs ::v-deep .v-tab {
+  flex: 1 1 0;
+  min-width: 0;
 }
 .market-actions {
   display: flex;

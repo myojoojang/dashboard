@@ -5,7 +5,7 @@ import { marketApi } from '../src/services/marketApi';
 import {
   buildHistoryChart,
   buildMetricChart,
-  buildPriceChart,
+  buildSparklineChart,
 } from '../src/utils/formatChartData';
 import { filterMarkets } from '../src/utils/filterMarkets';
 import {
@@ -60,6 +60,7 @@ test('market requests encode currency and use one supported page', async () => {
     order: 'market_cap_desc',
     per_page: '250',
     page: '1',
+    sparkline: 'true',
   });
 });
 
@@ -136,49 +137,21 @@ test('history charts keep exact timestamp coordinates and uneven intervals', () 
   ]);
 });
 
-test('comparisons keep each coin’s timestamps instead of aligning by sample index', () => {
-  const chart = buildPriceChart([
-    {
-      name: 'Full',
-      prices: [[1000, 10], [2000, 20], [3000, 30]],
-    },
-    {
-      name: 'Short',
-      prices: [[1500, 40]],
-    },
-    {
-      name: 'Missing',
-      prices: [],
-    },
+test('seven-day charts reuse market samples without inventing timestamps', () => {
+  const chart = buildSparklineChart([
+    market({ sparkline_in_7d: { price: [10, 20, 30] } }),
+    market({ sparkline_in_7d: { price: [40] } }),
+    market(),
   ]);
 
-  assert.equal(chart.labels, undefined);
-  assert.deepEqual(chart.datasets[1].data, [{
-    x: 1500,
-    y: 40,
-  }]);
+  assert.deepEqual(chart.labels, ['Sample 1', 'Sample 2', 'Sample 3']);
+  assert.deepEqual(chart.datasets[0].data, [10, 20, 30]);
+  assert.deepEqual(chart.datasets[1].data, [40]);
   assert.deepEqual(chart.datasets[2].data, []);
-  assert.deepEqual(buildPriceChart([]), { datasets: [] });
-});
-
-test('seven-day charts request timestamped prices in the selected currency', async () => {
-  const requests: URL[] = [];
-
-  globalThis.fetch = async (input) => {
-    requests.push(new URL(String(input)));
-
-    return new Response(JSON.stringify({ prices: [[1000, 10], [4000, 20]] }));
-  };
-  const series = await marketApi.getPriceHistory([market()], 'gbp');
-
-  assert.equal(requests.length, 1);
-  assert.equal(requests[0].pathname, '/api/v3/coins/bitcoin/market_chart');
-  assert.equal(requests[0].searchParams.get('days'), '7');
-  assert.equal(requests[0].searchParams.get('vs_currency'), 'gbp');
-  assert.deepEqual(series, [{
-    name: 'Bitcoin',
-    prices: [[1000, 10], [4000, 20]],
-  }]);
+  assert.deepEqual(buildSparklineChart([]), {
+    labels: [],
+    datasets: [],
+  });
 });
 
 test('metric charts keep zero and missing values distinct with stable colors', () => {

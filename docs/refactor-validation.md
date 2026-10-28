@@ -8,7 +8,7 @@ Baseline: `e804293` (the last original commit). Refactor: `2dbd391`, plus the co
 | --- | --- | --- |
 | Load currencies and market prices together | Same two endpoints, selected currency, rank order | Preserved; page-size correction below |
 | Market cap, total volume, and circulating supply doughnuts | Same fields and loaded markets | Preserved |
-| First ten markets in the seven-day line chart | Same selection, with timestamped seven-day history | Time coordinates corrected below |
+| First ten markets in the seven-day line chart | Same selection and market sparklines | Time coordinates corrected below |
 | All/Rise/Drop tabs | Same positive/negative comparison; zero excluded from Rise/Drop | Preserved; missing values also excluded |
 | Currency change reloads markets and resets to All | Same behavior | Preserved |
 | AG Grid sorting, filtering, resizing, and multiple selection | Same grid features | Preserved |
@@ -19,7 +19,7 @@ Baseline: `e804293` (the last original commit). Refactor: `2dbd391`, plus the co
 | Compare 1–20 rows, reject zero or more than 20 | Same bounds, inline messages instead of browser alerts | Preserved; 0, 1, 20, and 21 checked |
 | Fullscreen persistent detail/comparison dialogs | Same explicit-close behavior | Restored in audit |
 | Detail summary: rank, current price, price change, high/low, cap, cap change, volume, supply values | All original fields retained | Preserved |
-| Seven-day detail sparkline | Timestamped seven-day history rendered by the shared chart component | Time coordinates corrected below |
+| Seven-day detail sparkline | Market sparkline rendered by the shared chart component | Time coordinates corrected below |
 | Three history charts for 365 days in the selected currency | Price, market cap, and total volume using the same endpoint | Preserved; timestamps corrected below |
 | Root dashboard route | Single-page dashboard renders directly | Preserved; unused router and commented sidebar removed |
 | Table image and name columns | Image and name combined in one cell; remaining data fields retained | Presentation change |
@@ -41,8 +41,8 @@ The original component had handlers that were not called by the dashboard itself
 ## Intentional differences retained
 
 - The market request uses `per_page=250` instead of `1000`, respecting CoinGecko's documented maximum. It still requests only page 1; it does not enumerate 1,000 coins.
-- All time-series charts use exact API timestamps as continuous x coordinates, with UTC labels and tooltips. The original generated dates from array indexes, regardless of actual sampling intervals. Uneven intervals now have proportional spacing.
-- Seven-day charts request timestamped history per plotted coin in the selected currency. The market sparkline contains no timestamps, so it cannot provide exact time coordinates. Comparisons retain each coin’s own timestamps without padding or aligning by sample index. These additional requests can encounter public API rate limits; loading and manual retry states are provided.
+- Detailed history charts use exact API timestamps as continuous x coordinates, with UTC labels and tooltips. The original generated dates from array indexes, regardless of actual sampling intervals. Uneven intervals now have proportional spacing.
+- Seven-day overview, comparison, and detail trends reuse market sparklines. These have no timestamps, so labels explicitly show sample order instead of dates. No per-coin requests are made for these charts. Short series are neither padded nor assigned invented dates.
 - Missing numeric fields display a dash instead of being converted to zero or throwing. Small prices remain visible rather than rounding to zero.
 - Errors and loading states are visible, with manual retry. There are no automatic retries or background polling.
 - Closing a dialog preserves the dashboard data and selection. The original reloaded both endpoints and reset state on close.
@@ -61,10 +61,12 @@ The production build still reports a large-bundle warning from the retained UI/g
 
 ## Visual follow-up
 
-Restored the original 25px button/card corners, 40px tabs with their original margins, hidden tab indicator, 150px rounded currency selector, comparison icon, and centered 32px outlined close buttons. The user's newer Actions / Show details wording is preserved. Chart headings, viewport-relative heights, blue palette, markers, and axis font sizes also follow the original styles.
+Restored the original 25px button/card corners, 40px tabs with their original margins, hidden tab indicator, 150px rounded currency selector, comparison icon, and centered 32px outlined close buttons. The Actions heading is preserved, and details buttons use the original 32px circular magnifying-glass style with accessible labels. Tabs explicitly disable scroll arrows and flex to keep all three choices visible. Chart headings, viewport-relative heights, blue palette, markers, and axis font sizes also follow the original styles.
 
-Browser checks verified computed desktop control dimensions and styling, centered close buttons, and a 390px mobile layout without page overflow. The interaction audit still passes after these styling changes.
+Browser checks verified computed desktop control dimensions and styling, centered close buttons, arrow-free tabs and 32px details buttons from 320px to 1440px, and a 390px mobile layout without page overflow. The interaction audit still passes after these styling changes.
 
 ## Time-axis follow-up
 
-Tests cover exact timestamp preservation, uneven intervals, independent comparison timestamps, selected-currency seven-day requests, UTC daylight-saving transitions, and year rollover. Browser validation checks rendered time spacing and UTC tooltip titles alongside the existing interaction and styling checks.
+Tests cover exact historical timestamps, uneven intervals, UTC daylight-saving transitions, year rollover, and reuse of timestamp-free sparkline samples. Browser checks verify that overview and comparison trigger no history requests, while details makes one request with manual retry on failure. Historical axes retain proportional timestamp spacing and UTC labels.
+
+The initial timestamp fix added per-coin seven-day history requests. Those triggered public API rate limits, so they have been removed. The detailed historical axes remain corrected; seven-day charts explicitly show sample order instead of claiming timestamps the market response does not provide.
