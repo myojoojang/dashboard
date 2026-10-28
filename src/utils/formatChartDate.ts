@@ -1,15 +1,15 @@
-const dateFormat = new Intl.DateTimeFormat('en-GB', {
+const utcDateFormatter = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'UTC',
   day: '2-digit',
   month: 'short',
   year: 'numeric',
 });
 
-export function formatChartDate(timestamp: number): string {
-  return dateFormat.format(timestamp);
+export function formatChartDate(timestampMs: number): string {
+  return utcDateFormatter.format(timestampMs);
 }
 
-const dateTimeFormat = new Intl.DateTimeFormat('en-GB', {
+const utcDateTimeFormatter = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'UTC',
   day: '2-digit',
   month: 'short',
@@ -19,6 +19,6 @@ const dateTimeFormat = new Intl.DateTimeFormat('en-GB', {
   hourCycle: 'h23',
 });
 
-export function formatChartTimestamp(timestamp: number): string {
-  return dateTimeFormat.format(timestamp);
+export function formatChartTimestamp(timestampMs: number): string {
+  return utcDateTimeFormatter.format(timestampMs);
 }

@@ -1,4 +1,5 @@
-export interface MarketItem {
+// One coin object returned by CoinGecko /coins/markets.
+export interface CoinMarketSnapshot {
   id: string;
   name: string;
   symbol: string;
@@ -18,13 +19,14 @@ export interface MarketItem {
   sparkline_in_7d?: { price: number[] };
 }
 
-export type HistoryPoint = [timestamp: number, value: number];
+export type TimestampedMarketValue = [timestampMs: number, metricValue: number];
 
-export interface MarketHistory {
-  prices: HistoryPoint[];
-  market_caps: HistoryPoint[];
-  total_volumes: HistoryPoint[];
+// Timestamp/value pairs returned by CoinGecko /coins/{id}/market_chart.
+export interface CoinHistoryResponse {
+  prices: TimestampedMarketValue[];
+  market_caps: TimestampedMarketValue[];
+  total_volumes: TimestampedMarketValue[];
 }
 
-export type MarketFilter = 'all' | 'rise' | 'drop';
-export type MarketMetric = 'market_cap' | 'total_volume' | 'circulating_supply';
+export type PriceChangeFilter = 'all' | 'rise' | 'drop';
+export type MarketMetricField = 'market_cap' | 'total_volume' | 'circulating_supply';

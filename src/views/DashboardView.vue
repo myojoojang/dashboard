@@ -5,30 +5,33 @@
         Market overview
       </h2>
       <v-progress-linear
-        v-if="isLoading"
+        v-if="isLoadingMarkets"
         indeterminate
         aria-label="Loading markets"
       />
       <v-alert
-        v-if="errorMessage"
+        v-if="marketLoadError"
         type="error"
         outlined
         role="alert"
       >
-        {{ errorMessage }}
+        {{ marketLoadError }}
         <v-btn
           text
-          :disabled="isLoading"
-          @click="loadMarkets"
+          :disabled="isLoadingMarkets"
+          @click="loadMarketOverview"
         >
           Try again
         </v-btn>
       </v-alert>
-      <template v-if="markets.length">
-        <p>Updated {{ updatedAt }} · {{ currency.toUpperCase() }} · {{ markets.length }} markets</p>
+      <template v-if="coinMarkets.length">
+        <p>
+          Updated {{ marketDataLoadedAt }} · {{ selectedCurrency.toUpperCase() }}
+          · {{ coinMarkets.length }} markets
+        </p>
         <v-row>
           <v-col
-            v-for="chart in overviewCharts"
+            v-for="chart in marketOverviewCharts"
             :key="chart.title"
             cols="12"
             md="4"
@@ -44,13 +47,13 @@
           time-axis
           title="Top 10 cryptocurrencies (7-day trend · approximate dates)"
           chart-type="line"
-          :chart-data="topMarketsChart"
+          :chart-data="topTenSevenDayPriceChartData"
           show-legend
           large
           class="pa-4 mt-4"
         />
       </template>
-      <p v-else-if="!isLoading && !errorMessage">
+      <p v-else-if="!isLoadingMarkets && !marketLoadError">
         No markets found.
       </p>
     </v-card>
@@ -58,10 +61,10 @@
       <div class="market-controls">
         <div class="market-tabs">
           <v-tabs
-            v-model="filter"
+            v-model="priceChangeFilter"
             show-arrows="never"
             class="pa-2 pb-0"
-            @change="clearSelection"
+            @change="clearComparisonSelection"
           >
             <v-tab href="#all">
               All
@@ -76,9 +79,9 @@
         </div>
         <div class="market-actions ma-2">
           <v-select
-            v-model="currency"
-            :items="currencies"
-            :disabled="isLoading"
+            v-model="selectedCurrency"
+            :items="supportedCurrencies"
+            :disabled="isLoadingMarkets"
             placeholder="Currency"
             aria-label="Currency"
             rounded
@@ -86,13 +89,13 @@
             dense
             hide-details
             class="currency-select"
-            @change="loadMarkets"
+            @change="loadMarketOverview"
           />
           <v-btn
             class="mx-4"
             color="primary"
-            :disabled="isLoading || !markets.length"
-            @click="openComparison"
+            :disabled="isLoadingMarkets || !coinMarkets.length"
+            @click="openCoinComparison"
           >
             <v-icon
               small
@@ -105,48 +108,48 @@
         </div>
       </div>
       <v-alert
-        v-if="selectionMessage"
+        v-if="comparisonSelectionMessage"
         type="info"
         outlined
         role="status"
       >
-        {{ selectionMessage }}
+        {{ comparisonSelectionMessage }}
       </v-alert>
       <MarketTable
-        v-if="markets.length"
-        :key="currency"
-        :items="visibleMarkets"
-        :currency="currency"
-        @selection-change="selectMarkets"
-        @open-details="openDetails"
+        v-if="coinMarkets.length"
+        :key="selectedCurrency"
+        :coin-markets="filteredCoinMarkets"
+        :quote-currency="selectedCurrency"
+        @selection-change="updateComparisonSelection"
+        @open-details="openCoinDetails"
       />
     </v-card>
     <v-dialog
-      v-model="isDetailsOpen"
+      v-model="isDetailsDialogOpen"
       fullscreen
       persistent
       hide-overlay
       transition="dialog-bottom-transition"
     >
       <MarketDetails
-        v-if="isDetailsOpen && selectedMarket"
-        :item="selectedMarket"
-        :currency="currency"
-        @close="isDetailsOpen = false"
+        v-if="isDetailsDialogOpen && detailsCoin"
+        :coin="detailsCoin"
+        :quote-currency="selectedCurrency"
+        @close="isDetailsDialogOpen = false"
       />
     </v-dialog>
     <v-dialog
-      v-model="isComparisonOpen"
+      v-model="isComparisonDialogOpen"
       fullscreen
       persistent
       hide-overlay
       transition="dialog-bottom-transition"
     >
       <MarketComparison
-        v-if="isComparisonOpen"
-        :items="selectedMarkets"
-        :currency="currency"
-        @close="isComparisonOpen = false"
+        v-if="isComparisonDialogOpen"
+        :comparison-coins="comparisonCoins"
+        :quote-currency="selectedCurrency"
+        @close="isComparisonDialogOpen = false"
       />
     </v-dialog>
   </div>
@@ -154,29 +157,32 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { MarketFilter, MarketItem } from '@/types/market';
-import type { DashboardChartData } from '@/utils/formatChartData';
-import { buildMetricChart, buildSparklineChart } from '@/utils/formatChartData';
-import { filterMarkets } from '@/utils/filterMarkets';
-import { marketApi } from '@/services/marketApi';
+import type { PriceChangeFilter, CoinMarketSnapshot } from '@/types/market';
+import type { DashboardChartData } from '@/utils/buildMarketChartData';
+import {
+  buildMarketMetricChartData,
+  buildEstimatedSevenDayPriceChartData,
+} from '@/utils/buildMarketChartData';
+import { filterCoinsByPriceChange } from '@/utils/filterCoinsByPriceChange';
+import { coinGeckoApi } from '@/services/coinGeckoApi';
 import ChartCard from '@/components/charts/ChartCard.vue';
 import MarketTable from '@/components/market/MarketTable.vue';
 import MarketDetails from '@/components/market/MarketDetails.vue';
 import MarketComparison from '@/components/market/MarketComparison.vue';
 
 interface DashboardState {
-  markets: MarketItem[];
-  currencies: string[];
-  currency: string;
-  filter: MarketFilter;
-  updatedAt: string;
-  isLoading: boolean;
-  errorMessage: string;
-  selectedMarkets: MarketItem[];
-  selectedMarket: MarketItem | null;
-  selectionMessage: string;
-  isDetailsOpen: boolean;
-  isComparisonOpen: boolean;
+  coinMarkets: CoinMarketSnapshot[];
+  supportedCurrencies: string[];
+  selectedCurrency: string;
+  priceChangeFilter: PriceChangeFilter;
+  marketDataLoadedAt: string;
+  isLoadingMarkets: boolean;
+  marketLoadError: string;
+  comparisonCoins: CoinMarketSnapshot[];
+  detailsCoin: CoinMarketSnapshot | null;
+  comparisonSelectionMessage: string;
+  isDetailsDialogOpen: boolean;
+  isComparisonDialogOpen: boolean;
 }
 
 export default defineComponent({
@@ -189,96 +195,96 @@ export default defineComponent({
   },
   data(): DashboardState {
     return {
-      markets: [],
-      currencies: ['usd'],
-      currency: 'usd',
-      filter: 'all',
-      updatedAt: '',
-      isLoading: false,
-      errorMessage: '',
-      selectedMarkets: [],
-      selectedMarket: null,
-      selectionMessage: '',
-      isDetailsOpen: false,
-      isComparisonOpen: false,
+      coinMarkets: [],
+      supportedCurrencies: ['usd'],
+      selectedCurrency: 'usd',
+      priceChangeFilter: 'all',
+      marketDataLoadedAt: '',
+      isLoadingMarkets: false,
+      marketLoadError: '',
+      comparisonCoins: [],
+      detailsCoin: null,
+      comparisonSelectionMessage: '',
+      isDetailsDialogOpen: false,
+      isComparisonDialogOpen: false,
     };
   },
   computed: {
-    visibleMarkets(): MarketItem[] {
-      return filterMarkets(this.markets, this.filter);
+    filteredCoinMarkets(): CoinMarketSnapshot[] {
+      return filterCoinsByPriceChange(this.coinMarkets, this.priceChangeFilter);
     },
-    overviewCharts(): { title: string; data: DashboardChartData }[] {
+    marketOverviewCharts(): { title: string; data: DashboardChartData }[] {
       return [
         {
           title: 'Market cap',
-          data: buildMetricChart(this.markets, 'market_cap'),
+          data: buildMarketMetricChartData(this.coinMarkets, 'market_cap'),
         },
         {
           title: 'Total volume',
-          data: buildMetricChart(this.markets, 'total_volume'),
+          data: buildMarketMetricChartData(this.coinMarkets, 'total_volume'),
         },
         {
           title: 'Circulating supply',
-          data: buildMetricChart(this.markets, 'circulating_supply'),
+          data: buildMarketMetricChartData(this.coinMarkets, 'circulating_supply'),
         },
       ];
     },
-    topMarketsChart(): DashboardChartData {
-      return buildSparklineChart(this.markets.slice(0, 10));
+    topTenSevenDayPriceChartData(): DashboardChartData {
+      return buildEstimatedSevenDayPriceChartData(this.coinMarkets.slice(0, 10));
     },
   },
   created() {
-    this.loadMarkets();
+    this.loadMarketOverview();
   },
   methods: {
-    async loadMarkets(): Promise<void> {
-      this.isLoading = true;
-      this.errorMessage = '';
-      this.markets = [];
-      this.filter = 'all';
-      this.clearSelection();
+    async loadMarketOverview(): Promise<void> {
+      this.isLoadingMarkets = true;
+      this.marketLoadError = '';
+      this.coinMarkets = [];
+      this.priceChangeFilter = 'all';
+      this.clearComparisonSelection();
 
       try {
-        const [currencies, markets] = await Promise.all([
-          marketApi.getCurrencies(),
-          marketApi.getMarkets(this.currency),
+        const [supportedCurrencies, coinMarkets] = await Promise.all([
+          coinGeckoApi.fetchSupportedCurrencies(),
+          coinGeckoApi.fetchCoinMarkets(this.selectedCurrency),
         ]);
 
-        this.currencies = currencies;
-        this.markets = markets;
-        this.updatedAt = new Date().toLocaleString();
+        this.supportedCurrencies = supportedCurrencies;
+        this.coinMarkets = coinMarkets;
+        this.marketDataLoadedAt = new Date().toLocaleString();
       } catch {
-        this.errorMessage = 'Couldn’t load market data. Please try again.';
+        this.marketLoadError = 'Couldn’t load market data. Please try again.';
       } finally {
-        this.isLoading = false;
+        this.isLoadingMarkets = false;
       }
     },
-    clearSelection(): void {
-      this.selectedMarkets = [];
-      this.selectionMessage = '';
+    clearComparisonSelection(): void {
+      this.comparisonCoins = [];
+      this.comparisonSelectionMessage = '';
     },
-    selectMarkets(items: MarketItem[]): void {
-      this.selectedMarkets = items;
-      this.selectionMessage = '';
+    updateComparisonSelection(selectedCoins: CoinMarketSnapshot[]): void {
+      this.comparisonCoins = selectedCoins;
+      this.comparisonSelectionMessage = '';
     },
-    openDetails(item: MarketItem): void {
-      this.selectedMarket = item;
-      this.isDetailsOpen = true;
+    openCoinDetails(clickedCoin: CoinMarketSnapshot): void {
+      this.detailsCoin = clickedCoin;
+      this.isDetailsDialogOpen = true;
     },
-    openComparison(): void {
-      if (!this.selectedMarkets.length) {
-        this.selectionMessage = 'Select at least one market to compare.';
+    openCoinComparison(): void {
+      if (!this.comparisonCoins.length) {
+        this.comparisonSelectionMessage = 'Select at least one market to compare.';
 
         return;
       }
 
-      if (this.selectedMarkets.length > 20) {
-        this.selectionMessage = 'Select up to 20 markets to compare.';
+      if (this.comparisonCoins.length > 20) {
+        this.comparisonSelectionMessage = 'Select up to 20 markets to compare.';
 
         return;
       }
 
-      this.isComparisonOpen = true;
+      this.isComparisonDialogOpen = true;
     },
   },
 });

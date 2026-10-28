@@ -1,5 +1,5 @@
-const numberFormat = new Intl.NumberFormat(undefined, { maximumSignificantDigits: 12 });
-const compactFormat = new Intl.NumberFormat(undefined, {
+const numberFormatter = new Intl.NumberFormat(undefined, { maximumSignificantDigits: 12 });
+const compactNumberFormatter = new Intl.NumberFormat(undefined, {
   notation: 'compact',
   maximumFractionDigits: 1,
 });
@@ -9,7 +9,7 @@ export function formatNumber(value: number | null | undefined): string {
     return '—';
   }
 
-  return numberFormat.format(value);
+  return numberFormatter.format(value);
 }
 
 export function formatCompactNumber(value: number): string {
@@ -17,7 +17,7 @@ export function formatCompactNumber(value: number): string {
     return formatNumber(value);
   }
 
-  return compactFormat.format(value);
+  return compactNumberFormatter.format(value);
 }
 
 export function formatPercentage(value: number | null | undefined): string {

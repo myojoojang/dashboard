@@ -36,10 +36,10 @@ import {
 import type { ChartOptions } from 'chart.js';
 import type {
   ChartKind,
-  ChartValue,
+  ChartDataPoint,
   DashboardChartData,
   DashboardChartType,
-} from '@/utils/formatChartData';
+} from '@/utils/buildMarketChartData';
 import { buildChartOptions } from '@/utils/chartOptions';
 
 Chart.register(
@@ -56,7 +56,7 @@ Chart.register(
   Tooltip,
 );
 
-type ChartInstance = Chart<ChartKind, ChartValue[], string>;
+type ChartInstance = Chart<ChartKind, ChartDataPoint[], string>;
 
 export default defineComponent({
   name: 'ChartCard',
@@ -111,7 +111,7 @@ export default defineComponent({
       Object.assign(options, props.options);
       const type = props.chartType === 'horizontal-bar' ? 'bar' : props.chartType;
 
-      chart = new Chart<ChartKind, ChartValue[], string>(canvas.value, {
+      chart = new Chart<ChartKind, ChartDataPoint[], string>(canvas.value, {
         type,
         data: props.chartData,
         options,

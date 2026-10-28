@@ -17,7 +17,7 @@
       </v-btn>
     </v-toolbar>
     <v-card-text class="pa-10 pt-1">
-      <p>Last updated {{ lastUpdated }} · {{ currency.toUpperCase() }}</p>
+      <p>Last updated {{ formattedCoinUpdatedAt }} · {{ quoteCurrency.toUpperCase() }}</p>
       <v-sheet
         color="primary"
         dark
@@ -26,16 +26,16 @@
       >
         <div class="d-flex align-center mb-4">
           <v-img
-            :src="item.image"
-            :alt="item.name"
+            :src="coin.image"
+            :alt="coin.name"
             max-width="40"
             class="mr-4"
           />
-          <h3>{{ item.name }} · #{{ item.market_cap_rank }}</h3>
+          <h3>{{ coin.name }} · #{{ coin.market_cap_rank }}</h3>
         </div>
         <dl class="market-summary">
           <div
-            v-for="stat in statistics"
+            v-for="stat in coinStatistics"
             :key="stat.label"
           >
             <dt>{{ stat.label }}</dt>
@@ -47,34 +47,34 @@
         time-axis
         title="Price (7-day trend · approximate dates)"
         chart-type="line"
-        :chart-data="priceChart"
+        :chart-data="sevenDayPriceChartData"
       />
       <h3 class="primary--text my-4">
         Market history (last 365 days)
       </h3>
       <v-progress-linear
-        v-if="isLoading"
+        v-if="isLoadingHistory"
         indeterminate
         aria-label="Loading history"
       />
       <v-alert
-        v-if="errorMessage"
+        v-if="historyLoadError"
         type="error"
         outlined
         role="alert"
       >
-        {{ errorMessage }}
+        {{ historyLoadError }}
         <v-btn
           text
-          :disabled="isLoading"
-          @click="loadHistory"
+          :disabled="isLoadingHistory"
+          @click="loadCoinHistory"
         >
           Try again
         </v-btn>
       </v-alert>
-      <template v-if="history">
+      <template v-if="coinHistory">
         <ChartCard
-          v-for="chart in historyCharts"
+          v-for="chart in historicalMetricCharts"
           :key="chart.title"
           :title="chart.title"
           chart-type="line"
@@ -90,125 +90,131 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { PropType } from 'vue';
-import type { MarketHistory, MarketItem } from '@/types/market';
-import { marketApi } from '@/services/marketApi';
-import { buildHistoryChart, buildSparklineChart } from '@/utils/formatChartData';
-import type { DashboardChartData } from '@/utils/formatChartData';
+import type { CoinHistoryResponse, CoinMarketSnapshot } from '@/types/market';
+import { coinGeckoApi } from '@/services/coinGeckoApi';
+import {
+  buildHistoricalMetricChartData,
+  buildEstimatedSevenDayPriceChartData,
+} from '@/utils/buildMarketChartData';
+import type { DashboardChartData } from '@/utils/buildMarketChartData';
 import { formatNumber, formatPercentage } from '@/utils/formatNumber';
 import ChartCard from '@/components/charts/ChartCard.vue';
 
 interface MarketDetailsState {
-  history: MarketHistory | null;
-  isLoading: boolean;
-  errorMessage: string;
+  coinHistory: CoinHistoryResponse | null;
+  isLoadingHistory: boolean;
+  historyLoadError: string;
 }
 
 export default defineComponent({
   name: 'MarketDetails',
   components: { ChartCard },
   props: {
-    item: {
-      type: Object as PropType<MarketItem>,
+    coin: {
+      type: Object as PropType<CoinMarketSnapshot>,
       required: true,
     },
-    currency: {
+    quoteCurrency: {
       type: String,
       required: true,
     },
   },
   data(): MarketDetailsState {
     return {
-      history: null,
-      isLoading: false,
-      errorMessage: '',
+      coinHistory: null,
+      isLoadingHistory: false,
+      historyLoadError: '',
     };
   },
   computed: {
-    lastUpdated(): string {
-      return new Date(this.item.last_updated).toLocaleString();
+    formattedCoinUpdatedAt(): string {
+      return new Date(this.coin.last_updated).toLocaleString();
     },
-    priceChart(): DashboardChartData {
-      return buildSparklineChart([this.item]);
+    sevenDayPriceChartData(): DashboardChartData {
+      return buildEstimatedSevenDayPriceChartData([this.coin]);
     },
-    statistics(): { label: string; value: string }[] {
+    coinStatistics(): { label: string; value: string }[] {
       return [
         {
           label: 'Current price',
-          value: formatNumber(this.item.current_price),
+          value: formatNumber(this.coin.current_price),
         },
         {
           label: 'Price change (24h)',
-          value: formatPercentage(this.item.price_change_percentage_24h),
+          value: formatPercentage(this.coin.price_change_percentage_24h),
         },
         {
           label: 'Low (24h)',
-          value: formatNumber(this.item.low_24h),
+          value: formatNumber(this.coin.low_24h),
         },
         {
           label: 'High (24h)',
-          value: formatNumber(this.item.high_24h),
+          value: formatNumber(this.coin.high_24h),
         },
         {
           label: 'Market cap',
-          value: formatNumber(this.item.market_cap),
+          value: formatNumber(this.coin.market_cap),
         },
         {
           label: 'Market cap change (24h)',
-          value: formatPercentage(this.item.market_cap_change_percentage_24h),
+          value: formatPercentage(this.coin.market_cap_change_percentage_24h),
         },
         {
           label: 'Total volume',
-          value: formatNumber(this.item.total_volume),
+          value: formatNumber(this.coin.total_volume),
         },
         {
           label: 'Circulating supply',
-          value: formatNumber(this.item.circulating_supply),
+          value: formatNumber(this.coin.circulating_supply),
         },
         {
           label: 'Total supply',
-          value: formatNumber(this.item.total_supply),
+          value: formatNumber(this.coin.total_supply),
         },
         {
           label: 'Max supply',
-          value: formatNumber(this.item.max_supply),
+          value: formatNumber(this.coin.max_supply),
         },
       ];
     },
-    historyCharts(): { title: string; data: DashboardChartData }[] {
-      if (!this.history) {
+    historicalMetricCharts(): { title: string; data: DashboardChartData }[] {
+      if (!this.coinHistory) {
         return [];
       }
 
       return [
         {
           title: 'Price',
-          data: buildHistoryChart(this.history.prices, 'Price'),
+          data: buildHistoricalMetricChartData(this.coinHistory.prices, 'Price'),
         },
         {
           title: 'Market cap',
-          data: buildHistoryChart(this.history.market_caps, 'Market cap'),
+          data: buildHistoricalMetricChartData(this.coinHistory.market_caps, 'Market cap'),
         },
         {
           title: 'Total volume',
-          data: buildHistoryChart(this.history.total_volumes, 'Total volume'),
+          data: buildHistoricalMetricChartData(this.coinHistory.total_volumes, 'Total volume'),
         },
       ];
     },
   },
   created() {
-    this.loadHistory();
+    this.loadCoinHistory();
   },
   methods: {
-    async loadHistory(): Promise<void> {
-      this.isLoading = true;
-      this.errorMessage = '';
+    async loadCoinHistory(): Promise<void> {
+      this.isLoadingHistory = true;
+      this.historyLoadError = '';
 
       try {
-        this.history = await marketApi.getHistory(this.item.id, this.currency);
+        this.coinHistory = await coinGeckoApi.fetchCoinYearHistory(
+          this.coin.id,
+          this.quoteCurrency,
+        );
       } catch {
-        this.errorMessage = 'Couldn’t load market history. Please try again.';
+        this.historyLoadError = 'Couldn’t load market history. Please try again.';
       } finally {
-        this.isLoading = false;
+        this.isLoadingHistory = false;
       }
     },
   },

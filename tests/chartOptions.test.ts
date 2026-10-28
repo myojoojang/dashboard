@@ -40,6 +40,8 @@ test('time-series lines use continuous timestamp coordinates with an explicit UT
   const options = buildChartOptions('line', true, true);
 
   assert.equal(options.scales?.x?.type, 'linear');
+  assert.equal(options.scales?.x?.bounds, 'data');
+  assert.equal(options.scales?.x?.offset, false);
   assert.deepEqual(options.scales?.x?.title, {
     display: true,
     text: 'Date (UTC)',

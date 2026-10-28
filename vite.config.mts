@@ -7,6 +7,17 @@ export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          charts: ['chart.js'],
+          grid: ['ag-grid-vue'],
+          ui: ['vue', 'vuetify/lib/framework'],
+        },
+      },
+    },
+  },
   css: {
     preprocessorOptions: {
       sass: {

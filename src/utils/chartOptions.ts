@@ -1,5 +1,5 @@
 import type { ChartOptions } from 'chart.js';
-import type { ChartKind, DashboardChartType } from './formatChartData';
+import type { ChartKind, DashboardChartType } from './buildMarketChartData';
 import { formatCompactNumber } from './formatNumber';
 import { formatChartDate, formatChartTimestamp } from './formatChartDate';
 
@@ -8,7 +8,7 @@ export function buildChartOptions(
   showLegend: boolean,
   timeAxis = false,
 ): ChartOptions<ChartKind> {
-  const options: ChartOptions<ChartKind> = {
+  const chartOptions: ChartOptions<ChartKind> = {
     responsive: true,
     maintainAspectRatio: false,
     animation: false,
@@ -16,10 +16,10 @@ export function buildChartOptions(
   };
 
   if (chartType === 'doughnut') {
-    return options;
+    return chartOptions;
   }
 
-  const categoryAxis = {
+  const categoryAxisOptions = {
     ticks: {
       font: { size: 9 },
       maxTicksLimit: 8,
@@ -27,7 +27,7 @@ export function buildChartOptions(
     },
     grid: { display: false },
   };
-  const valueAxis = {
+  const valueAxisOptions = {
     beginAtZero: chartType !== 'line',
     ticks: {
       font: { size: 9 },
@@ -38,20 +38,20 @@ export function buildChartOptions(
   };
 
   if (chartType === 'horizontal-bar') {
-    options.indexAxis = 'y';
-    options.scales = {
-      x: valueAxis,
-      y: categoryAxis,
+    chartOptions.indexAxis = 'y';
+    chartOptions.scales = {
+      x: valueAxisOptions,
+      y: categoryAxisOptions,
     };
   } else {
-    options.scales = {
-      x: categoryAxis,
-      y: valueAxis,
+    chartOptions.scales = {
+      x: categoryAxisOptions,
+      y: valueAxisOptions,
     };
   }
 
   if (chartType === 'line' && timeAxis) {
-    options.scales = {
+    chartOptions.scales = {
       x: {
         type: 'linear',
         bounds: 'data',
@@ -70,25 +70,25 @@ export function buildChartOptions(
         },
         grid: { display: false },
       },
-      y: valueAxis,
+      y: valueAxisOptions,
     };
-    options.plugins = {
-      ...options.plugins,
+    chartOptions.plugins = {
+      ...chartOptions.plugins,
       tooltip: {
         callbacks: {
-          title(items) {
-            const timestamp = items[0]?.parsed.x;
+          title(tooltipItems) {
+            const timestampMs = tooltipItems[0]?.parsed.x;
 
-            if (timestamp == null) {
+            if (timestampMs == null) {
               return '';
             }
 
-            return `${formatChartTimestamp(timestamp)} UTC`;
+            return `${formatChartTimestamp(timestampMs)} UTC`;
           },
         },
       },
     };
   }
 
-  return options;
+  return chartOptions;
 }

@@ -1,13 +1,13 @@
 import test, { afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import type { MarketItem } from '../src/types/market';
-import { marketApi } from '../src/services/marketApi';
+import type { CoinMarketSnapshot } from '../src/types/market';
+import { coinGeckoApi } from '../src/services/coinGeckoApi';
 import {
-  buildHistoryChart,
-  buildMetricChart,
-  buildSparklineChart,
-} from '../src/utils/formatChartData';
-import { filterMarkets } from '../src/utils/filterMarkets';
+  buildHistoricalMetricChartData,
+  buildMarketMetricChartData,
+  buildEstimatedSevenDayPriceChartData,
+} from '../src/utils/buildMarketChartData';
+import { filterCoinsByPriceChange } from '../src/utils/filterCoinsByPriceChange';
 import {
   formatCompactNumber,
   formatNumber,
@@ -20,7 +20,7 @@ afterEach(() => {
   globalThis.fetch = originalFetch;
 });
 
-function market(overrides: Partial<MarketItem> = {}): MarketItem {
+function createCoinMarketFixture(overrides: Partial<CoinMarketSnapshot> = {}): CoinMarketSnapshot {
   return {
     id: 'bitcoin',
     name: 'Bitcoin',
@@ -48,9 +48,9 @@ test('market requests encode currency and use one supported page', async () => {
   globalThis.fetch = async (input) => {
     requests.push(new URL(String(input)));
 
-    return new Response(JSON.stringify([market()]));
+    return new Response(JSON.stringify([createCoinMarketFixture()]));
   };
-  const result = await marketApi.getMarkets('usd');
+  const result = await coinGeckoApi.fetchCoinMarkets('usd');
 
   assert.equal(result[0].id, 'bitcoin');
   assert.equal(requests.length, 1);
@@ -78,7 +78,7 @@ test('history requests encode the id and preserve the selected currency', async 
       }),
     );
   };
-  await marketApi.getHistory('coin/id', 'gbp');
+  await coinGeckoApi.fetchCoinYearHistory('coin/id', 'gbp');
   assert.equal(request?.pathname, '/api/v3/coins/coin%2Fid/market_chart');
   assert.equal(request?.searchParams.get('vs_currency'), 'gbp');
   assert.equal(request?.searchParams.get('days'), '365');
@@ -88,37 +88,37 @@ test('API failures reject instead of returning error payloads as data', async ()
   globalThis.fetch = async () => {
     return new Response('Rate limited', { status: 429 });
   };
-  await assert.rejects(marketApi.getCurrencies(), /429/);
+  await assert.rejects(coinGeckoApi.fetchSupportedCurrencies(), /429/);
 });
 
 test('rise and drop filters exclude missing and unchanged prices without mutating input', () => {
-  const items = [
-    market({
+  const coinMarkets = [
+    createCoinMarketFixture({
       id: 'rise',
       price_change_percentage_24h: 2,
     }),
-    market({
+    createCoinMarketFixture({
       id: 'drop',
       price_change_percentage_24h: -3,
     }),
-    market({
+    createCoinMarketFixture({
       id: 'flat',
       price_change_percentage_24h: 0,
     }),
-    market({
+    createCoinMarketFixture({
       id: 'missing',
       price_change_percentage_24h: null,
     }),
   ];
 
-  assert.equal(filterMarkets(items, 'all'), items);
-  assert.deepEqual(filterMarkets(items, 'rise'), [items[0]]);
-  assert.deepEqual(filterMarkets(items, 'drop'), [items[1]]);
-  assert.equal(items.length, 4);
+  assert.equal(filterCoinsByPriceChange(coinMarkets, 'all'), coinMarkets);
+  assert.deepEqual(filterCoinsByPriceChange(coinMarkets, 'rise'), [coinMarkets[0]]);
+  assert.deepEqual(filterCoinsByPriceChange(coinMarkets, 'drop'), [coinMarkets[1]]);
+  assert.equal(coinMarkets.length, 4);
 });
 
 test('history charts keep exact timestamp coordinates and uneven intervals', () => {
-  const chart = buildHistoryChart([[1000, 0], [9000, 5], [900000, 2]], 'Price');
+  const chart = buildHistoricalMetricChartData([[1000, 0], [9000, 5], [900000, 2]], 'Price');
 
   assert.equal(chart.labels, undefined);
   assert.deepEqual(chart.datasets[0].data, [
@@ -138,10 +138,10 @@ test('history charts keep exact timestamp coordinates and uneven intervals', () 
 });
 
 test('sparkline samples step backward in hours from the last-updated hour', () => {
-  const chart = buildSparklineChart([
-    market({ sparkline_in_7d: { price: [10, 20, 30] } }),
-    market({ sparkline_in_7d: { price: [40] } }),
-    market(),
+  const chart = buildEstimatedSevenDayPriceChartData([
+    createCoinMarketFixture({ sparkline_in_7d: { price: [10, 20, 30] } }),
+    createCoinMarketFixture({ sparkline_in_7d: { price: [40] } }),
+    createCoinMarketFixture(),
   ]);
 
   assert.equal(chart.labels, undefined);
@@ -164,16 +164,16 @@ test('sparkline samples step backward in hours from the last-updated hour', () =
     y: 40,
   }]);
   assert.deepEqual(chart.datasets[2].data, []);
-  assert.deepEqual(buildSparklineChart([]), { datasets: [] });
+  assert.deepEqual(buildEstimatedSevenDayPriceChartData([]), { datasets: [] });
 });
 
 test('hourly sparkline estimates handle year rollover and invalid update dates', () => {
-  const chart = buildSparklineChart([
-    market({
+  const chart = buildEstimatedSevenDayPriceChartData([
+    createCoinMarketFixture({
       last_updated: '2027-01-01T00:45:00Z',
       sparkline_in_7d: { price: [1, 2] },
     }),
-    market({
+    createCoinMarketFixture({
       last_updated: 'invalid',
       sparkline_in_7d: { price: [1] },
     }),
@@ -193,11 +193,14 @@ test('hourly sparkline estimates handle year rollover and invalid update dates',
 });
 
 test('metric charts keep zero and missing values distinct with stable colors', () => {
-  const items = [market({ market_cap: 0 }), market({ market_cap: null })];
-  const chart = buildMetricChart(items, 'market_cap');
+  const coinMarkets = [
+    createCoinMarketFixture({ market_cap: 0 }),
+    createCoinMarketFixture({ market_cap: null }),
+  ];
+  const chart = buildMarketMetricChartData(coinMarkets, 'market_cap');
 
   assert.deepEqual(chart.datasets[0].data, [0, null]);
-  assert.deepEqual(chart, buildMetricChart(items, 'market_cap'));
+  assert.deepEqual(chart, buildMarketMetricChartData(coinMarkets, 'market_cap'));
 });
 
 test('number formatting handles missing values without turning them into zero', () => {

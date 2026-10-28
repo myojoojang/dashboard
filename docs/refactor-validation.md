@@ -61,12 +61,25 @@ The production build still reports a large-bundle warning from the retained UI/g
 
 ## Visual follow-up
 
-Restored the original 25px button/card corners, 40px tabs with their original margins, hidden tab indicator, 150px rounded currency selector, comparison icon, and centered 32px outlined close buttons. The Actions heading is preserved, and details buttons use the original 32px circular magnifying-glass style with accessible labels. Tabs explicitly disable scroll arrows and flex to keep all three choices visible. Chart headings, viewport-relative heights, blue palette, markers, and axis font sizes also follow the original styles.
+Restored the original 25px button/card corners, 40px tabs with their original margins, hidden tab indicator, 150px rounded currency selector, comparison icon, and centered 32px outlined close buttons. The Actions heading is preserved, and details buttons show a white magnifying glass and Details text on a blue pill, with a lighter hover/focus color and accessible labels. Tabs explicitly disable scroll arrows and flex to keep all three choices visible. Chart headings, viewport-relative heights, blue palette, markers, and axis font sizes also follow the original styles.
 
-Browser checks verified computed desktop control dimensions and styling, centered close buttons, arrow-free tabs and 32px details buttons from 320px to 1440px, and a 390px mobile layout without page overflow. The interaction audit still passes after these styling changes.
+Browser checks verified computed desktop control dimensions and styling, centered close buttons, arrow-free tabs from 320px to 1440px and unclipped Details buttons, and a 390px mobile layout without page overflow. The interaction audit still passes after these styling changes.
 
 ## Time-axis follow-up
 
 Tests cover exact historical timestamps, uneven intervals, UTC daylight-saving transitions, year rollover, and reuse of timestamp-free sparkline samples. Browser checks verify that overview and comparison trigger no history requests, while details makes one request with manual retry on failure. Historical axes retain proportional timestamp spacing and UTC labels.
 
 The initial timestamp fix added per-coin seven-day history requests. Those triggered public API rate limits, so they have been removed. The detailed historical axes remain corrected; seven-day charts use approximate hourly timestamps without additional requests.
+
+## Build cleanup
+
+- Node 24 is consistent across the package engine, `.nvmrc`, type definitions, and CI. Sass is pinned alongside the other build tools.
+- Vuetify imports load only the component modules used by the app; unused chip/divider/spacer registrations are removed. The build transforms 267 modules, down from 526, and CSS falls from approximately 571 KB to 555 KB before compression.
+- Chart, grid, and core UI dependencies have separate output chunks. This improves caching across application edits; it does not eliminate the cost of loading AG Grid. The app entry is approximately 156 KB, with a separate 992 KB grid chunk that still triggers the size warning.
+- GitHub Actions uses Node from `.nvmrc`, installs with `npm ci`, and runs `npm run check`. Netlify runs the same lint/test/typecheck/build command. The hosted workflow must still run after pushing.
+- A clean install, all project checks, and development/production browser checks validate the changes. Browser checks cover API retry, selection, filtering, dialogs, currencies, control styling, and mobile layout; chart checks retain all original modes.
+- Dependency audit still reports findings in the retained Vue 2, Vuetify 2, AG Grid 25, and Vue type-checking stack. Available fixes include incompatible major upgrades; this build cleanup does not claim to resolve those framework-level findings.
+
+## Naming follow-up
+
+Renamed API access, response types, selected-coin state, props, and chart builders to identify their data and purpose. `coinGeckoApi.ts`, `buildMarketChartData.ts`, and `filterCoinsByPriceChange.ts` now match their exported functions. The README traces market responses through table selection, detail props, estimated seven-day data, and timestamped history. No endpoint parameters, API response fields, chart values, or interaction behavior changed. All 17 tests and the development/production browser interaction checks pass after these renames.

@@ -18,13 +18,13 @@
     </v-toolbar>
     <v-card-text class="pa-10 pt-1">
       <h2 class="primary--text mb-4">
-        Market comparison · {{ currency.toUpperCase() }}
+        Market comparison · {{ quoteCurrency.toUpperCase() }}
       </h2>
       <ChartCard
         time-axis
         title="Prices (7-day trend · approximate dates)"
         chart-type="line"
-        :chart-data="chartData"
+        :chart-data="comparisonPriceChartData"
         show-legend
         large
       />
@@ -35,27 +35,27 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { PropType } from 'vue';
-import type { MarketItem } from '@/types/market';
-import type { DashboardChartData } from '@/utils/formatChartData';
-import { buildSparklineChart } from '@/utils/formatChartData';
+import type { CoinMarketSnapshot } from '@/types/market';
+import type { DashboardChartData } from '@/utils/buildMarketChartData';
+import { buildEstimatedSevenDayPriceChartData } from '@/utils/buildMarketChartData';
 import ChartCard from '@/components/charts/ChartCard.vue';
 
 export default defineComponent({
   name: 'MarketComparison',
   components: { ChartCard },
   props: {
-    items: {
-      type: Array as PropType<MarketItem[]>,
+    comparisonCoins: {
+      type: Array as PropType<CoinMarketSnapshot[]>,
       required: true,
     },
-    currency: {
+    quoteCurrency: {
       type: String,
       required: true,
     },
   },
   computed: {
-    chartData(): DashboardChartData {
-      return buildSparklineChart(this.items);
+    comparisonPriceChartData(): DashboardChartData {
+      return buildEstimatedSevenDayPriceChartData(this.comparisonCoins);
     },
   },
 });
