@@ -1,7 +1,7 @@
 import type { ChartOptions } from 'chart.js';
 import type { ChartKind, DashboardChartType } from './formatChartData';
 import { formatCompactNumber } from './formatNumber';
-import { formatChartDate } from './formatChartDate';
+import { formatChartDate, formatChartTimestamp } from './formatChartDate';
 
 export function buildChartOptions(
   chartType: DashboardChartType,
@@ -54,9 +54,11 @@ export function buildChartOptions(
     options.scales = {
       x: {
         type: 'linear',
+        bounds: 'data',
+        offset: false,
         title: {
           display: true,
-          text: 'Date / time (UTC)',
+          text: 'Date (UTC)',
         },
         ticks: {
           font: { size: 9 },
@@ -81,7 +83,7 @@ export function buildChartOptions(
               return '';
             }
 
-            return `${formatChartDate(timestamp)} UTC`;
+            return `${formatChartTimestamp(timestamp)} UTC`;
           },
         },
       },

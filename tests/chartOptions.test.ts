@@ -42,7 +42,7 @@ test('time-series lines use continuous timestamp coordinates with an explicit UT
   assert.equal(options.scales?.x?.type, 'linear');
   assert.deepEqual(options.scales?.x?.title, {
     display: true,
-    text: 'Date / time (UTC)',
+    text: 'Date (UTC)',
   });
   assert.ok(options.plugins?.tooltip?.callbacks?.title);
 });

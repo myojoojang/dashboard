@@ -45,7 +45,7 @@
       </v-sheet>
       <ChartCard
         time-axis
-        title="Price (7-day trend · approximate times)"
+        title="Price (7-day trend · approximate dates)"
         chart-type="line"
         :chart-data="priceChart"
       />

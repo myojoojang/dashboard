@@ -102,7 +102,11 @@ export default defineComponent({
       }
 
       chart?.destroy();
-      const options = buildChartOptions(props.chartType, props.showLegend, props.timeAxis);
+      const options = buildChartOptions(
+        props.chartType,
+        props.showLegend,
+        props.timeAxis,
+      );
 
       Object.assign(options, props.options);
       const type = props.chartType === 'horizontal-bar' ? 'bar' : props.chartType;

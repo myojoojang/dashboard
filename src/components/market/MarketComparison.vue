@@ -22,7 +22,7 @@
       </h2>
       <ChartCard
         time-axis
-        title="Prices (7-day trend · approximate times)"
+        title="Prices (7-day trend · approximate dates)"
         chart-type="line"
         :chart-data="chartData"
         show-legend
