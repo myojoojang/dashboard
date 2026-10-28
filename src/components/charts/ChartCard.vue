@@ -1,8 +1,8 @@
 <template>
   <section class="chart-card">
-    <h3 class="primary--text mb-3">
+    <h4 class="pa-1 px-3 primary--text mb-2">
       {{ title }}
-    </h3>
+    </h4>
     <div
       class="chart-container"
       :class="{ 'chart-container--large': large }"
@@ -34,7 +34,12 @@ import {
   Tooltip,
 } from 'chart.js';
 import type { ChartOptions } from 'chart.js';
-import type { ChartKind, DashboardChartData, DashboardChartType } from '@/utils/chartData';
+import type {
+  ChartKind,
+  ChartValue,
+  DashboardChartData,
+  DashboardChartType,
+} from '@/utils/formatChartData';
 import { buildChartOptions } from '@/utils/chartOptions';
 
 Chart.register(
@@ -51,7 +56,7 @@ Chart.register(
   Tooltip,
 );
 
-type ChartInstance = Chart<ChartKind, (number | null)[], string>;
+type ChartInstance = Chart<ChartKind, ChartValue[], string>;
 
 export default defineComponent({
   name: 'ChartCard',
@@ -74,6 +79,10 @@ export default defineComponent({
         return {};
       },
     },
+    timeAxis: {
+      type: Boolean,
+      default: false,
+    },
     showLegend: {
       type: Boolean,
       default: false,
@@ -93,12 +102,12 @@ export default defineComponent({
       }
 
       chart?.destroy();
-      const options = buildChartOptions(props.chartType, props.showLegend);
+      const options = buildChartOptions(props.chartType, props.showLegend, props.timeAxis);
 
       Object.assign(options, props.options);
       const type = props.chartType === 'horizontal-bar' ? 'bar' : props.chartType;
 
-      chart = new Chart<ChartKind, (number | null)[], string>(canvas.value, {
+      chart = new Chart<ChartKind, ChartValue[], string>(canvas.value, {
         type,
         data: props.chartData,
         options,
@@ -114,6 +123,8 @@ export default defineComponent({
       return props.options;
     }, () => {
       return props.showLegend;
+    }, () => {
+      return props.timeAxis;
     }], renderChart);
     onBeforeUnmount(() => {
       chart?.destroy();
@@ -129,9 +140,10 @@ export default defineComponent({
 }
 .chart-container {
   position: relative;
-  height: 280px;
+  height: 30vh;
+  min-height: 250px;
 }
 .chart-container--large {
-  height: 420px;
+  height: 80vh;
 }
 </style>

@@ -1,4 +1,4 @@
-import type { MarketHistory, MarketItem } from '../types/market';
+import type { MarketHistory, MarketItem, PriceSeries } from '../types/market';
 
 const API_URL = 'https://api.coingecko.com/api/v3';
 
@@ -25,13 +25,22 @@ export const marketApi = {
       order: 'market_cap_desc',
       per_page: '250',
       page: '1',
-      sparkline: 'true',
     });
   },
-  async getHistory(id: string, currency: string): Promise<MarketHistory> {
+  async getHistory(id: string, currency: string, days: 7 | 365 = 365): Promise<MarketHistory> {
     return get<MarketHistory>(`/coins/${encodeURIComponent(id)}/market_chart`, {
       vs_currency: currency,
-      days: '365',
+      days: String(days),
     });
+  },
+  async getPriceHistory(items: readonly MarketItem[], currency: string): Promise<PriceSeries[]> {
+    return Promise.all(items.map(async (item) => {
+      const history = await marketApi.getHistory(item.id, currency, 7);
+
+      return {
+        name: item.name,
+        prices: history.prices,
+      };
+    }));
   },
 };

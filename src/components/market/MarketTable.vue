@@ -137,7 +137,7 @@ export default defineComponent({
             const button = document.createElement('button');
 
             button.type = 'button';
-            button.className = 'market-details-button';
+            button.className = 'market-details-button v-btn v-btn--text theme--light v-size--small primary--text';
             button.textContent = 'Show details';
             button.setAttribute(
               'aria-label',
@@ -174,7 +174,9 @@ export default defineComponent({
 }
 .market-details-button {
   color: #0f2d61;
-  text-decoration: underline;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  letter-spacing: normal;
 }
 .market-details-button:focus-visible {
   outline: 2px solid #0f2d61;

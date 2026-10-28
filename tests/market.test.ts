@@ -2,9 +2,17 @@ import test, { afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import type { MarketItem } from '../src/types/market';
 import { marketApi } from '../src/services/marketApi';
-import { buildHistoryChart, buildMetricChart, buildSparklineChart } from '../src/utils/chartData';
+import {
+  buildHistoryChart,
+  buildMetricChart,
+  buildPriceChart,
+} from '../src/utils/formatChartData';
 import { filterMarkets } from '../src/utils/filterMarkets';
-import { formatCompactNumber, formatNumber, formatPercentage } from '../src/utils/formatNumber';
+import {
+  formatCompactNumber,
+  formatNumber,
+  formatPercentage,
+} from '../src/utils/formatNumber';
 
 const originalFetch = globalThis.fetch;
 
@@ -30,12 +38,11 @@ function market(overrides: Partial<MarketItem> = {}): MarketItem {
     total_supply: null,
     max_supply: null,
     last_updated: '2026-10-28T10:00:00Z',
-    sparkline_in_7d: { price: [90, 95, 100] },
     ...overrides,
   };
 }
 
-test('market requests encode currency and use one supported page with sparklines', async () => {
+test('market requests encode currency and use one supported page', async () => {
   const requests: URL[] = [];
 
   globalThis.fetch = async (input) => {
@@ -53,7 +60,6 @@ test('market requests encode currency and use one supported page with sparklines
     order: 'market_cap_desc',
     per_page: '250',
     page: '1',
-    sparkline: 'true',
   });
 });
 
@@ -63,11 +69,13 @@ test('history requests encode the id and preserve the selected currency', async 
   globalThis.fetch = async (input) => {
     request = new URL(String(input));
 
-    return new Response(JSON.stringify({
-      prices: [],
-      market_caps: [],
-      total_volumes: [],
-    }));
+    return new Response(
+      JSON.stringify({
+        prices: [],
+        market_caps: [],
+        total_volumes: [],
+      }),
+    );
   };
   await marketApi.getHistory('coin/id', 'gbp');
   assert.equal(request?.pathname, '/api/v3/coins/coin%2Fid/market_chart');
@@ -108,35 +116,69 @@ test('rise and drop filters exclude missing and unchanged prices without mutatin
   assert.equal(items.length, 4);
 });
 
-test('history charts use API timestamps, including irregular intervals', () => {
-  const points: [number, number][] = [[1000, 0], [9000, 5], [900000, 2]];
-  const chart = buildHistoryChart(points, 'Price');
+test('history charts keep exact timestamp coordinates and uneven intervals', () => {
+  const chart = buildHistoryChart([[1000, 0], [9000, 5], [900000, 2]], 'Price');
 
-  assert.deepEqual(chart.labels, points.map(([timestamp]) => {
-    return new Date(timestamp).toLocaleString();
-  }));
-  assert.deepEqual(chart.datasets[0].data, [0, 5, 2]);
+  assert.equal(chart.labels, undefined);
+  assert.deepEqual(chart.datasets[0].data, [
+    {
+      x: 1000,
+      y: 0,
+    },
+    {
+      x: 9000,
+      y: 5,
+    },
+    {
+      x: 900000,
+      y: 2,
+    },
+  ]);
 });
 
-test('comparison charts align different series lengths and preserve missing values', () => {
-  const chart = buildSparklineChart([
-    market(), market({
+test('comparisons keep each coin’s timestamps instead of aligning by sample index', () => {
+  const chart = buildPriceChart([
+    {
+      name: 'Full',
+      prices: [[1000, 10], [2000, 20], [3000, 30]],
+    },
+    {
       name: 'Short',
-      sparkline_in_7d: { price: [40] },
-    }),
-    market({
+      prices: [[1500, 40]],
+    },
+    {
       name: 'Missing',
-      sparkline_in_7d: undefined,
-    }),
+      prices: [],
+    },
   ]);
 
-  assert.equal(chart.labels?.length, 3);
-  assert.deepEqual(chart.datasets[1].data, [null, null, 40]);
-  assert.deepEqual(chart.datasets[2].data, [null, null, null]);
-  assert.deepEqual(buildSparklineChart([]), {
-    labels: [],
-    datasets: [],
-  });
+  assert.equal(chart.labels, undefined);
+  assert.deepEqual(chart.datasets[1].data, [{
+    x: 1500,
+    y: 40,
+  }]);
+  assert.deepEqual(chart.datasets[2].data, []);
+  assert.deepEqual(buildPriceChart([]), { datasets: [] });
+});
+
+test('seven-day charts request timestamped prices in the selected currency', async () => {
+  const requests: URL[] = [];
+
+  globalThis.fetch = async (input) => {
+    requests.push(new URL(String(input)));
+
+    return new Response(JSON.stringify({ prices: [[1000, 10], [4000, 20]] }));
+  };
+  const series = await marketApi.getPriceHistory([market()], 'gbp');
+
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].pathname, '/api/v3/coins/bitcoin/market_chart');
+  assert.equal(requests[0].searchParams.get('days'), '7');
+  assert.equal(requests[0].searchParams.get('vs_currency'), 'gbp');
+  assert.deepEqual(series, [{
+    name: 'Bitcoin',
+    prices: [[1000, 10], [4000, 20]],
+  }]);
 });
 
 test('metric charts keep zero and missing values distinct with stable colors', () => {

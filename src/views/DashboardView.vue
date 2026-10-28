@@ -40,53 +40,89 @@
             />
           </v-col>
         </v-row>
+        <v-progress-linear
+          v-if="isHistoryLoading"
+          indeterminate
+          aria-label="Loading price history"
+        />
+        <v-alert
+          v-if="historyError"
+          type="error"
+          outlined
+          role="alert"
+        >
+          {{ historyError }}
+          <v-btn
+            text
+            :disabled="isHistoryLoading"
+            @click="loadPriceHistory"
+          >
+            Try again
+          </v-btn>
+        </v-alert>
         <ChartCard
+          v-if="priceHistory.length"
+          time-axis
           title="Top 10 cryptocurrencies (last 7 days)"
           chart-type="line"
           :chart-data="topMarketsChart"
           show-legend
           large
-          class="mt-6"
+          class="pa-4 mt-4"
         />
       </template>
       <p v-else-if="!isLoading && !errorMessage">
         No markets found.
       </p>
     </v-card>
-    <v-card class="pa-4">
+    <v-card class="mt-2 py-0">
       <div class="market-controls">
-        <v-tabs
-          v-model="filter"
-          @change="clearSelection"
-        >
-          <v-tab href="#all">
-            All
-          </v-tab>
-          <v-tab href="#rise">
-            Rise
-          </v-tab>
-          <v-tab href="#drop">
-            Drop
-          </v-tab>
-        </v-tabs>
-        <v-select
-          v-model="currency"
-          :items="currencies"
-          :disabled="isLoading"
-          label="Currency"
-          outlined
-          dense
-          hide-details
-          class="currency-select"
-          @change="loadMarkets"
-        />
-        <v-btn
-          color="primary"
-          :disabled="isLoading || !markets.length"
-          @click="openComparison"
-        >
-          Compare selected
-        </v-btn>
+        <div class="market-tabs">
+          <v-tabs
+            v-model="filter"
+            class="pa-2 pb-0"
+            @change="clearSelection"
+          >
+            <v-tab href="#all">
+              All
+            </v-tab>
+            <v-tab href="#rise">
+              Rise
+            </v-tab>
+            <v-tab href="#drop">
+              Drop
+            </v-tab>
+          </v-tabs>
+        </div>
+        <div class="market-actions ma-2">
+          <v-select
+            v-model="currency"
+            :items="currencies"
+            :disabled="isLoading || isHistoryLoading"
+            placeholder="Currency"
+            aria-label="Currency"
+            rounded
+            outlined
+            dense
+            hide-details
+            class="currency-select"
+            @change="loadMarkets"
+          />
+          <v-btn
+            class="mx-4"
+            color="primary"
+            :disabled="isLoading || !markets.length"
+            @click="openComparison"
+          >
+            <v-icon
+              small
+              class="mr-2"
+            >
+              mdi-checkbox-marked
+            </v-icon>
+            Comparison
+          </v-btn>
+        </div>
       </div>
       <v-alert
         v-if="selectionMessage"
@@ -126,45 +162,33 @@
       hide-overlay
       transition="dialog-bottom-transition"
     >
-      <v-card v-if="isComparisonOpen">
-        <v-toolbar flat>
-          <h2>Market comparison · {{ currency.toUpperCase() }}</h2>
-          <v-spacer />
-          <v-btn
-            icon
-            aria-label="Close comparison"
-            @click="isComparisonOpen = false"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-toolbar>
-        <v-card-text>
-          <ChartCard
-            title="Prices (last 7 days)"
-            chart-type="line"
-            :chart-data="comparisonChart"
-            show-legend
-            large
-          />
-        </v-card-text>
-      </v-card>
+      <MarketComparison
+        v-if="isComparisonOpen"
+        :items="selectedMarkets"
+        :currency="currency"
+        @close="isComparisonOpen = false"
+      />
     </v-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { MarketFilter, MarketItem } from '@/types/market';
-import type { DashboardChartData } from '@/utils/chartData';
-import { buildMetricChart, buildSparklineChart } from '@/utils/chartData';
+import type { MarketFilter, MarketItem, PriceSeries } from '@/types/market';
+import type { DashboardChartData } from '@/utils/formatChartData';
+import { buildMetricChart, buildPriceChart } from '@/utils/formatChartData';
 import { filterMarkets } from '@/utils/filterMarkets';
 import { marketApi } from '@/services/marketApi';
 import ChartCard from '@/components/charts/ChartCard.vue';
 import MarketTable from '@/components/market/MarketTable.vue';
 import MarketDetails from '@/components/market/MarketDetails.vue';
+import MarketComparison from '@/components/market/MarketComparison.vue';
 
 interface DashboardState {
   markets: MarketItem[];
+  priceHistory: PriceSeries[];
+  historyError: string;
+  isHistoryLoading: boolean;
   currencies: string[];
   currency: string;
   filter: MarketFilter;
@@ -184,10 +208,14 @@ export default defineComponent({
     ChartCard,
     MarketTable,
     MarketDetails,
+    MarketComparison,
   },
   data(): DashboardState {
     return {
       markets: [],
+      priceHistory: [],
+      historyError: '',
+      isHistoryLoading: false,
       currencies: ['usd'],
       currency: 'usd',
       filter: 'all',
@@ -222,10 +250,7 @@ export default defineComponent({
       ];
     },
     topMarketsChart(): DashboardChartData {
-      return buildSparklineChart(this.markets.slice(0, 10));
-    },
-    comparisonChart(): DashboardChartData {
-      return buildSparklineChart(this.selectedMarkets);
+      return buildPriceChart(this.priceHistory);
     },
   },
   created() {
@@ -236,6 +261,8 @@ export default defineComponent({
       this.isLoading = true;
       this.errorMessage = '';
       this.markets = [];
+      this.priceHistory = [];
+      this.historyError = '';
       this.filter = 'all';
       this.clearSelection();
 
@@ -247,10 +274,26 @@ export default defineComponent({
         this.currencies = currencies;
         this.markets = markets;
         this.updatedAt = new Date().toLocaleString();
+        await this.loadPriceHistory();
       } catch {
         this.errorMessage = 'Couldn’t load market data. Please try again.';
       } finally {
         this.isLoading = false;
+      }
+    },
+    async loadPriceHistory(): Promise<void> {
+      this.isHistoryLoading = true;
+      this.historyError = '';
+
+      try {
+        this.priceHistory = await marketApi.getPriceHistory(
+          this.markets.slice(0, 10),
+          this.currency,
+        );
+      } catch {
+        this.historyError = 'Couldn’t load seven-day price history. Please try again.';
+      } finally {
+        this.isHistoryLoading = false;
       }
     },
     clearSelection(): void {
@@ -288,15 +331,22 @@ export default defineComponent({
 .market-controls {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 16px;
 }
-.market-controls > .v-tabs {
-  flex: 1 1 280px;
-  width: auto;
+.market-tabs {
+  width: 300px;
+  max-width: 100%;
+}
+.market-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px 0;
 }
 .currency-select {
-  flex: 0 1 180px;
+  flex: 0 0 150px;
+  width: 150px;
 }
 </style>

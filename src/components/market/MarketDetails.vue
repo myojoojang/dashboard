@@ -1,17 +1,22 @@
 <template>
   <v-card class="market-details">
-    <v-toolbar flat>
-      <h2>{{ item.name }}</h2>
-      <v-spacer />
+    <v-toolbar
+      dense
+      flat
+      class="pa-0 d-flex justify-center"
+    >
       <v-btn
-        icon
+        outlined
+        fab
+        x-small
+        color="primary"
         aria-label="Close details"
         @click="$emit('close')"
       >
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </v-toolbar>
-    <v-card-text>
+    <v-card-text class="pa-10 pt-1">
       <p>Last updated {{ lastUpdated }} · {{ currency.toUpperCase() }}</p>
       <v-sheet
         color="primary"
@@ -39,9 +44,11 @@
         </dl>
       </v-sheet>
       <ChartCard
+        v-if="priceHistory.length"
+        time-axis
         title="Price (last 7 days)"
         chart-type="line"
-        :chart-data="sparkline"
+        :chart-data="priceChart"
       />
       <h3 class="primary--text my-4">
         Market history (last 365 days)
@@ -72,6 +79,7 @@
           :key="chart.title"
           :title="chart.title"
           chart-type="line"
+          time-axis
           :chart-data="chart.data"
           class="my-6"
         />
@@ -83,12 +91,19 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { PropType } from 'vue';
-import type { MarketHistory, MarketItem } from '@/types/market';
+import type { MarketHistory, MarketItem, PriceSeries } from '@/types/market';
 import { marketApi } from '@/services/marketApi';
-import { buildHistoryChart, buildSparklineChart } from '@/utils/chartData';
-import type { DashboardChartData } from '@/utils/chartData';
+import { buildHistoryChart, buildPriceChart } from '@/utils/formatChartData';
+import type { DashboardChartData } from '@/utils/formatChartData';
 import { formatNumber, formatPercentage } from '@/utils/formatNumber';
 import ChartCard from '@/components/charts/ChartCard.vue';
+
+interface MarketDetailsState {
+  history: MarketHistory | null;
+  priceHistory: PriceSeries[];
+  isLoading: boolean;
+  errorMessage: string;
+}
 
 export default defineComponent({
   name: 'MarketDetails',
@@ -103,9 +118,10 @@ export default defineComponent({
       required: true,
     },
   },
-  data(): { history: MarketHistory | null; isLoading: boolean; errorMessage: string } {
+  data(): MarketDetailsState {
     return {
       history: null,
+      priceHistory: [],
       isLoading: false,
       errorMessage: '',
     };
@@ -114,8 +130,8 @@ export default defineComponent({
     lastUpdated(): string {
       return new Date(this.item.last_updated).toLocaleString();
     },
-    sparkline(): DashboardChartData {
-      return buildSparklineChart([this.item]);
+    priceChart(): DashboardChartData {
+      return buildPriceChart(this.priceHistory);
     },
     statistics(): { label: string; value: string }[] {
       return [
@@ -191,7 +207,13 @@ export default defineComponent({
       this.errorMessage = '';
 
       try {
-        this.history = await marketApi.getHistory(this.item.id, this.currency);
+        const [history, priceHistory] = await Promise.all([
+          marketApi.getHistory(this.item.id, this.currency),
+          marketApi.getPriceHistory([this.item], this.currency),
+        ]);
+
+        this.history = history;
+        this.priceHistory = priceHistory;
       } catch {
         this.errorMessage = 'Couldn’t load market history. Please try again.';
       } finally {

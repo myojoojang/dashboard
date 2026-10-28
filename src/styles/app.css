@@ -8,21 +8,47 @@ body {
   background: transparent !important;
 }
 body .v-application {
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: 'Noto Sans KR', sans-serif !important;
+  font-weight: 400;
   font-size: 0.95rem;
 }
 .small-text {
   font-size: 0.8rem;
 }
 body .v-card:not(.v-sheet--outlined) {
-  border-radius: 20px;
+  border-radius: 25px;
   box-shadow: 11px 11px 10px -8px rgb(0 102 203 / 10%);
 }
-.v-dialog--fullscreen > .v-card {
+body .v-dialog--fullscreen > .v-card:not(.v-sheet--outlined) {
   border-radius: 0;
 }
-.market-controls .v-tab--active {
+div .theme--light.v-select .v-select__selection--comma {
+  color: #0f2d61;
+  font-size: 0.8rem;
+}
+div .theme--light.v-icon {
+  color: #0f2d61;
+}
+div .v-btn {
+  border-radius: 25px;
+}
+div .v-tab {
+  border-radius: 25px;
+  height: 40px;
+  margin-top: 5px;
+}
+div .v-tab--active {
   background: #0f2d61;
-  color: white !important;
-  border-radius: 20px;
+  color: #fff !important;
+  border-radius: 25px;
+  margin-left: 6px;
+}
+div .v-tabs-slider {
+  display: none;
+}
+div .v-progress-linear__background {
+  border-radius: 0 25px 25px 0;
+}
+div .v-progress-linear__determinate {
+  border-radius: 25px 0 0 25px;
 }

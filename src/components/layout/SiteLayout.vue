@@ -30,7 +30,7 @@ export default defineComponent({ name: 'SiteLayout' });
 <style scoped>
 .site-layout {
   width: 100%;
-  max-width: 1380px;
+  max-width: 1340px;
   margin: auto;
   padding: 0 16px;
 }

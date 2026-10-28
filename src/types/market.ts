@@ -15,10 +15,14 @@ export interface MarketItem {
   total_supply: number | null;
   max_supply: number | null;
   last_updated: string;
-  sparkline_in_7d?: { price: number[] };
 }
 
 export type HistoryPoint = [timestamp: number, value: number];
+
+export interface PriceSeries {
+  name: string;
+  prices: HistoryPoint[];
+}
 
 export interface MarketHistory {
   prices: HistoryPoint[];

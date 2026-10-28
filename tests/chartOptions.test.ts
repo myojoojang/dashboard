@@ -8,6 +8,7 @@ test('horizontal bars put their category axis on y', () => {
   assert.equal(options.indexAxis, 'y');
   assert.deepEqual(options.scales?.y, {
     ticks: {
+      font: { size: 9 },
       maxTicksLimit: 8,
       maxRotation: 0,
     },
@@ -33,4 +34,15 @@ test('doughnut charts do not get Cartesian axes', () => {
   assert.equal(options.scales, undefined);
   assert.equal(options.indexAxis, undefined);
   assert.equal(options.plugins?.legend?.display, false);
+});
+
+test('time-series lines use continuous timestamp coordinates with an explicit UTC label', () => {
+  const options = buildChartOptions('line', true, true);
+
+  assert.equal(options.scales?.x?.type, 'linear');
+  assert.deepEqual(options.scales?.x?.title, {
+    display: true,
+    text: 'Date / time (UTC)',
+  });
+  assert.ok(options.plugins?.tooltip?.callbacks?.title);
 });
