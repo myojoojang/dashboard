@@ -100,7 +100,7 @@
             >
               mdi-checkbox-marked
             </v-icon>
-            Comparison
+            Compare selected
           </v-btn>
         </div>
       </div>
@@ -240,7 +240,8 @@ export default defineComponent({
 
       try {
         const [currencies, markets] = await Promise.all([
-          marketApi.getCurrencies(), marketApi.getMarkets(this.currency),
+          marketApi.getCurrencies(),
+          marketApi.getMarkets(this.currency),
         ]);
 
         this.currencies = currencies;

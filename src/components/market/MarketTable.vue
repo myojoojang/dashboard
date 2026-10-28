@@ -138,8 +138,8 @@ export default defineComponent({
 
             button.type = 'button';
             button.className = [
-              'market-details-button v-btn v-btn--fab v-btn--round',
-              'theme--light v-size--x-small primary white--text',
+              'market-details-button v-btn',
+              'theme--light v-size--small primary white--text',
             ].join(' ');
             const content = document.createElement('span');
             const icon = document.createElement('i');
@@ -147,7 +147,7 @@ export default defineComponent({
             content.className = 'v-btn__content';
             icon.className = 'v-icon notranslate mdi mdi-magnify theme--light white--text';
             icon.setAttribute('aria-hidden', 'true');
-            content.append(icon);
+            content.append(icon, document.createTextNode('Details'));
             button.append(content);
             button.title = `View ${params.data.name} details`;
             button.setAttribute(
@@ -184,8 +184,15 @@ export default defineComponent({
   gap: 8px;
 }
 .market-details-button {
-  color: #0f2d61;
   vertical-align: middle;
+  transition: background-color 150ms ease;
+}
+.market-details-button .v-btn__content {
+  gap: 6px;
+}
+.v-application .market-details-button.primary:hover,
+.v-application .market-details-button.primary:focus-visible {
+  background-color: #25549a !important;
 }
 .market-details-button:focus-visible {
   outline: 2px solid #0f2d61;
