@@ -84,7 +84,9 @@ export default defineComponent({
           field: 'price_change_percentage_24h',
           type: 'rightAligned',
           valueFormatter: (cellParams: CoinMarketCellParams) => {
-            return formatPercentage(cellParams.data.price_change_percentage_24h);
+            return formatPercentage(
+              cellParams.data.price_change_percentage_24h,
+            );
           },
           cellClassRules: {
             'market-change--positive': (cellParams: CoinMarketCellParams) => {
@@ -132,8 +134,8 @@ export default defineComponent({
           sortable: false,
           filter: false,
           pinned: 'right',
-          minWidth: 200,
-          width: 200,
+          minWidth: 140,
+          width: 140,
           cellRenderer: this.renderDetailsButton,
         },
       ];
@@ -149,7 +151,10 @@ export default defineComponent({
       coinImage.width = 20;
       coinImage.height = 20;
       coinNameCell.className = 'market-name';
-      coinNameCell.append(coinImage, document.createTextNode(cellParams.data.name));
+      coinNameCell.append(
+        coinImage,
+        document.createTextNode(cellParams.data.name),
+      );
 
       return coinNameCell;
     },
@@ -165,7 +170,8 @@ export default defineComponent({
       const detailsIcon = document.createElement('i');
 
       buttonContent.className = 'v-btn__content';
-      detailsIcon.className = 'v-icon notranslate mdi mdi-magnify theme--light white--text';
+      detailsIcon.className =
+        'v-icon notranslate mdi mdi-magnify theme--light white--text';
       detailsIcon.setAttribute('aria-hidden', 'true');
       buttonContent.append(detailsIcon, document.createTextNode('Details'));
       detailsButton.append(buttonContent);
