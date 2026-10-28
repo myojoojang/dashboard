@@ -42,6 +42,7 @@
         </v-row>
         <ChartCard
           title="Top 10 cryptocurrencies (last 7 days)"
+          chart-type="line"
           :chart-data="topMarketsChart"
           show-legend
           large
@@ -97,7 +98,7 @@
       </v-alert>
       <MarketTable
         v-if="markets.length"
-        :key="`${currency}-${filter}`"
+        :key="currency"
         :items="visibleMarkets"
         :currency="currency"
         @selection-change="selectMarkets"
@@ -107,6 +108,8 @@
     <v-dialog
       v-model="isDetailsOpen"
       fullscreen
+      persistent
+      hide-overlay
       transition="dialog-bottom-transition"
     >
       <MarketDetails
@@ -119,6 +122,8 @@
     <v-dialog
       v-model="isComparisonOpen"
       fullscreen
+      persistent
+      hide-overlay
       transition="dialog-bottom-transition"
     >
       <v-card v-if="isComparisonOpen">
@@ -136,6 +141,7 @@
         <v-card-text>
           <ChartCard
             title="Prices (last 7 days)"
+            chart-type="line"
             :chart-data="comparisonChart"
             show-legend
             large

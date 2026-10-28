@@ -1,8 +1,9 @@
 import type { ChartData } from 'chart.js';
 import type { HistoryPoint, MarketItem, MarketMetric } from '../types/market';
 
-export type DashboardChartType = 'line' | 'doughnut';
-export type DashboardChartData = ChartData<DashboardChartType, (number | null)[], string>;
+export type ChartKind = 'line' | 'bar' | 'doughnut';
+export type DashboardChartType = ChartKind | 'horizontal-bar';
+export type DashboardChartData = ChartData<ChartKind, (number | null)[], string>;
 
 function seriesColor(index: number): string {
   return `hsl(${(215 + index * 47) % 360}, 65%, 48%)`;

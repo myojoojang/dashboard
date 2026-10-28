@@ -19,16 +19,39 @@
 <script lang="ts">
 import { defineComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { PropType } from 'vue';
-import { Chart, ArcElement, CategoryScale, DoughnutController, Legend, LinearScale,
-  LineController, LineElement, PointElement, Tooltip } from 'chart.js';
+import {
+  Chart,
+  ArcElement,
+  BarController,
+  BarElement,
+  CategoryScale,
+  DoughnutController,
+  Legend,
+  LinearScale,
+  LineController,
+  LineElement,
+  PointElement,
+  Tooltip,
+} from 'chart.js';
 import type { ChartOptions } from 'chart.js';
-import type { DashboardChartData, DashboardChartType } from '@/utils/chartData';
-import { formatCompactNumber } from '@/utils/formatNumber';
+import type { ChartKind, DashboardChartData, DashboardChartType } from '@/utils/chartData';
+import { buildChartOptions } from '@/utils/chartOptions';
 
-Chart.register(ArcElement, CategoryScale, DoughnutController, Legend, LinearScale,
-  LineController, LineElement, PointElement, Tooltip);
+Chart.register(
+  ArcElement,
+  BarController,
+  BarElement,
+  CategoryScale,
+  DoughnutController,
+  Legend,
+  LinearScale,
+  LineController,
+  LineElement,
+  PointElement,
+  Tooltip,
+);
 
-type ChartInstance = Chart<DashboardChartType, (number | null)[], string>;
+type ChartInstance = Chart<ChartKind, (number | null)[], string>;
 
 export default defineComponent({
   name: 'ChartCard',
@@ -43,7 +66,13 @@ export default defineComponent({
     },
     chartType: {
       type: String as PropType<DashboardChartType>,
-      default: 'line',
+      default: 'doughnut',
+    },
+    options: {
+      type: Object as PropType<ChartOptions<ChartKind>>,
+      default: () => {
+        return {};
+      },
     },
     showLegend: {
       type: Boolean,
@@ -64,34 +93,13 @@ export default defineComponent({
       }
 
       chart?.destroy();
-      const options: ChartOptions<DashboardChartType> = {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: false,
-        plugins: { legend: { display: props.showLegend } },
-      };
+      const options = buildChartOptions(props.chartType, props.showLegend);
 
-      if (props.chartType === 'line') {
-        options.scales = {
-          x: {
-            ticks: {
-              maxTicksLimit: 8,
-              maxRotation: 0,
-            },
-            grid: { display: false },
-          },
-          y: {
-            ticks: {
-              callback(value) {
-                return formatCompactNumber(Number(value));
-              },
-            },
-          },
-        };
-      }
+      Object.assign(options, props.options);
+      const type = props.chartType === 'horizontal-bar' ? 'bar' : props.chartType;
 
-      chart = new Chart<DashboardChartType, (number | null)[], string>(canvas.value, {
-        type: props.chartType,
+      chart = new Chart<ChartKind, (number | null)[], string>(canvas.value, {
+        type,
         data: props.chartData,
         options,
       });
@@ -102,6 +110,10 @@ export default defineComponent({
       return props.chartData;
     }, () => {
       return props.chartType;
+    }, () => {
+      return props.options;
+    }, () => {
+      return props.showLegend;
     }], renderChart);
     onBeforeUnmount(() => {
       chart?.destroy();

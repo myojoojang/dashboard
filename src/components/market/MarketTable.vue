@@ -6,7 +6,6 @@
     :default-col-def="defaultColumn"
     :row-height="44"
     row-selection="multiple"
-    :suppress-row-click-selection="true"
     :enable-cell-text-selection="true"
     @selection-changed="onSelectionChanged"
   />
@@ -53,7 +52,6 @@ export default defineComponent({
         {
           headerName: '',
           headerCheckboxSelection: true,
-          headerCheckboxSelectionFilteredOnly: true,
           checkboxSelection: true,
           sortable: false,
           filter: false,
@@ -88,6 +86,7 @@ export default defineComponent({
         {
           headerName: `Price (${this.currency.toUpperCase()})`,
           field: 'current_price',
+          type: 'rightAligned',
           valueFormatter: (params: MarketCell) => {
             return formatNumber(params.data.current_price);
           },
@@ -95,6 +94,7 @@ export default defineComponent({
         {
           headerName: 'Change (24h)',
           field: 'price_change_percentage_24h',
+          type: 'rightAligned',
           valueFormatter: (params: MarketCell) => {
             return formatPercentage(params.data.price_change_percentage_24h);
           },
@@ -107,10 +107,12 @@ export default defineComponent({
             },
           },
         },
-        ...(['high_24h', 'low_24h', 'market_cap', 'circulating_supply'] as const).map((field) => {
+        ...(
+          ['high_24h', 'low_24h', 'market_cap', 'circulating_supply'] as const
+        ).map((field) => {
           const labels = {
-            high_24h: 'High (24h)',
-            low_24h: 'Low (24h)',
+            high_24h: `High (24h, ${this.currency.toUpperCase()})`,
+            low_24h: `Low (24h, ${this.currency.toUpperCase()})`,
             market_cap: 'Market cap',
             circulating_supply: 'Circulating supply',
           };
@@ -118,25 +120,29 @@ export default defineComponent({
           return {
             headerName: labels[field],
             field,
+            type: 'rightAligned',
             valueFormatter: (params: MarketCell) => {
               return formatNumber(params.data[field]);
             },
           };
         }),
         {
-          headerName: 'Details',
+          headerName: 'Actions',
           sortable: false,
           filter: false,
           pinned: 'right',
           minWidth: 90,
-          width: 90,
+          width: 120,
           cellRenderer: (params: MarketCell) => {
             const button = document.createElement('button');
 
             button.type = 'button';
             button.className = 'market-details-button';
-            button.textContent = 'Details';
-            button.setAttribute('aria-label', `View ${params.data.name} details`);
+            button.textContent = 'Show details';
+            button.setAttribute(
+              'aria-label',
+              `View ${params.data.name} details`,
+            );
             button.addEventListener('click', () => {
               this.$emit('open-details', params.data);
             });

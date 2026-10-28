@@ -40,6 +40,7 @@
       </v-sheet>
       <ChartCard
         title="Price (last 7 days)"
+        chart-type="line"
         :chart-data="sparkline"
       />
       <h3 class="primary--text my-4">
@@ -70,6 +71,7 @@
           v-for="chart in historyCharts"
           :key="chart.title"
           :title="chart.title"
+          chart-type="line"
           :chart-data="chart.data"
           class="my-6"
         />
