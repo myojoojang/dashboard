@@ -134,8 +134,8 @@ export default defineComponent({
           sortable: false,
           filter: false,
           pinned: 'right',
-          minWidth: 140,
-          width: 140,
+          minWidth: 180,
+          width: 180,
           cellRenderer: this.renderDetailsButton,
         },
       ];
