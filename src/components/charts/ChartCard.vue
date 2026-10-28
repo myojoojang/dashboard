@@ -119,17 +119,15 @@ export default defineComponent({
     }
 
     onMounted(renderChart);
-    watch([() => {
-      return props.chartData;
-    }, () => {
-      return props.chartType;
-    }, () => {
-      return props.options;
-    }, () => {
-      return props.showLegend;
-    }, () => {
-      return props.timeAxis;
-    }], renderChart);
+    watch(() => {
+      return [
+        props.chartData,
+        props.chartType,
+        props.options,
+        props.showLegend,
+        props.timeAxis,
+      ];
+    }, renderChart);
     onBeforeUnmount(() => {
       chart?.destroy();
     });

@@ -69,19 +69,7 @@ export default defineComponent({
           headerName: 'Name',
           field: 'name',
           width: 180,
-          cellRenderer: (cellParams: CoinMarketCellParams) => {
-            const coinNameCell = document.createElement('span');
-            const coinImage = document.createElement('img');
-
-            coinImage.src = cellParams.data.image;
-            coinImage.alt = '';
-            coinImage.width = 20;
-            coinImage.height = 20;
-            coinNameCell.className = 'market-name';
-            coinNameCell.append(coinImage, document.createTextNode(cellParams.data.name));
-
-            return coinNameCell;
-          },
+          cellRenderer: this.renderCoinNameCell,
         },
         {
           headerName: `Price (${this.quoteCurrency.toUpperCase()})`,
@@ -107,25 +95,38 @@ export default defineComponent({
             },
           },
         },
-        ...(
-          ['high_24h', 'low_24h', 'market_cap', 'circulating_supply'] as const
-        ).map((metricField) => {
-          const metricColumnLabels = {
-            high_24h: `High (24h, ${this.quoteCurrency.toUpperCase()})`,
-            low_24h: `Low (24h, ${this.quoteCurrency.toUpperCase()})`,
-            market_cap: 'Market cap',
-            circulating_supply: 'Circulating supply',
-          };
-
-          return {
-            headerName: metricColumnLabels[metricField],
-            field: metricField,
-            type: 'rightAligned',
-            valueFormatter: (cellParams: CoinMarketCellParams) => {
-              return formatNumber(cellParams.data[metricField]);
-            },
-          };
-        }),
+        {
+          headerName: `High (24h, ${this.quoteCurrency.toUpperCase()})`,
+          field: 'high_24h',
+          type: 'rightAligned',
+          valueFormatter: (cellParams: CoinMarketCellParams) => {
+            return formatNumber(cellParams.data.high_24h);
+          },
+        },
+        {
+          headerName: `Low (24h, ${this.quoteCurrency.toUpperCase()})`,
+          field: 'low_24h',
+          type: 'rightAligned',
+          valueFormatter: (cellParams: CoinMarketCellParams) => {
+            return formatNumber(cellParams.data.low_24h);
+          },
+        },
+        {
+          headerName: 'Market cap',
+          field: 'market_cap',
+          type: 'rightAligned',
+          valueFormatter: (cellParams: CoinMarketCellParams) => {
+            return formatNumber(cellParams.data.market_cap);
+          },
+        },
+        {
+          headerName: 'Circulating supply',
+          field: 'circulating_supply',
+          type: 'rightAligned',
+          valueFormatter: (cellParams: CoinMarketCellParams) => {
+            return formatNumber(cellParams.data.circulating_supply);
+          },
+        },
         {
           headerName: 'Actions',
           sortable: false,
@@ -133,38 +134,52 @@ export default defineComponent({
           pinned: 'right',
           minWidth: 200,
           width: 200,
-          cellRenderer: (cellParams: CoinMarketCellParams) => {
-            const detailsButton = document.createElement('button');
-
-            detailsButton.type = 'button';
-            detailsButton.className = [
-              'market-details-button v-btn',
-              'theme--light v-size--small primary white--text',
-            ].join(' ');
-            const buttonContent = document.createElement('span');
-            const detailsIcon = document.createElement('i');
-
-            buttonContent.className = 'v-btn__content';
-            detailsIcon.className = 'v-icon notranslate mdi mdi-magnify theme--light white--text';
-            detailsIcon.setAttribute('aria-hidden', 'true');
-            buttonContent.append(detailsIcon, document.createTextNode('Details'));
-            detailsButton.append(buttonContent);
-            detailsButton.title = `View ${cellParams.data.name} details`;
-            detailsButton.setAttribute(
-              'aria-label',
-              `View ${cellParams.data.name} details`,
-            );
-            detailsButton.addEventListener('click', () => {
-              this.$emit('open-details', cellParams.data);
-            });
-
-            return detailsButton;
-          },
+          cellRenderer: this.renderDetailsButton,
         },
       ];
     },
   },
   methods: {
+    renderCoinNameCell(cellParams: CoinMarketCellParams): HTMLElement {
+      const coinNameCell = document.createElement('span');
+      const coinImage = document.createElement('img');
+
+      coinImage.src = cellParams.data.image;
+      coinImage.alt = '';
+      coinImage.width = 20;
+      coinImage.height = 20;
+      coinNameCell.className = 'market-name';
+      coinNameCell.append(coinImage, document.createTextNode(cellParams.data.name));
+
+      return coinNameCell;
+    },
+    renderDetailsButton(cellParams: CoinMarketCellParams): HTMLButtonElement {
+      const detailsButton = document.createElement('button');
+
+      detailsButton.type = 'button';
+      detailsButton.className = [
+        'market-details-button v-btn',
+        'theme--light v-size--small primary white--text',
+      ].join(' ');
+      const buttonContent = document.createElement('span');
+      const detailsIcon = document.createElement('i');
+
+      buttonContent.className = 'v-btn__content';
+      detailsIcon.className = 'v-icon notranslate mdi mdi-magnify theme--light white--text';
+      detailsIcon.setAttribute('aria-hidden', 'true');
+      buttonContent.append(detailsIcon, document.createTextNode('Details'));
+      detailsButton.append(buttonContent);
+      detailsButton.title = `View ${cellParams.data.name} details`;
+      detailsButton.setAttribute(
+        'aria-label',
+        `View ${cellParams.data.name} details`,
+      );
+      detailsButton.addEventListener('click', () => {
+        this.$emit('open-details', cellParams.data);
+      });
+
+      return detailsButton;
+    },
     emitSelectedCoins(selectionEvent: SelectionChangedEvent): void {
       this.$emit('selection-change', selectionEvent.api.getSelectedRows());
     },

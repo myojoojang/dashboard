@@ -43,11 +43,8 @@ export function buildChartOptions(
       x: valueAxisOptions,
       y: categoryAxisOptions,
     };
-  } else {
-    chartOptions.scales = {
-      x: categoryAxisOptions,
-      y: valueAxisOptions,
-    };
+
+    return chartOptions;
   }
 
   if (chartType === 'line' && timeAxis) {
@@ -88,7 +85,14 @@ export function buildChartOptions(
         },
       },
     };
+
+    return chartOptions;
   }
+
+  chartOptions.scales = {
+    x: categoryAxisOptions,
+    y: valueAxisOptions,
+  };
 
   return chartOptions;
 }

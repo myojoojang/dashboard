@@ -18,14 +18,17 @@ export function buildMarketMetricChartData(
     return getChartSeriesColor(seriesIndex);
   });
 
+  const coinNames = coinMarkets.map((coin) => {
+    return coin.name;
+  });
+  const metricValues = coinMarkets.map((coin) => {
+    return coin[metricField];
+  });
+
   return {
-    labels: coinMarkets.map((coin) => {
-      return coin.name;
-    }),
+    labels: coinNames,
     datasets: [{
-      data: coinMarkets.map((coin) => {
-        return coin[metricField];
-      }),
+      data: metricValues,
       backgroundColor: seriesColors,
       hoverBackgroundColor: seriesColors,
       borderWidth: 0.5,
@@ -79,15 +82,17 @@ export function buildHistoricalMetricChartData(
   timestampedValues: TimestampedMarketValue[],
   datasetLabel: string,
 ): DashboardChartData {
+  const metricCoordinates = timestampedValues.map(([timestampMs, metricValue]) => {
+    return {
+      x: timestampMs,
+      y: metricValue,
+    };
+  });
+
   return {
     datasets: [{
       label: datasetLabel,
-      data: timestampedValues.map(([timestampMs, metricValue]) => {
-        return {
-          x: timestampMs,
-          y: metricValue,
-        };
-      }),
+      data: metricCoordinates,
       borderColor: '#0f2d61',
       borderWidth: 1,
       pointRadius: 1,
