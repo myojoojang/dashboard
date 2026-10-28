@@ -137,21 +137,59 @@ test('history charts keep exact timestamp coordinates and uneven intervals', () 
   ]);
 });
 
-test('seven-day charts reuse market samples without inventing timestamps', () => {
+test('sparkline samples step backward in hours from the last-updated hour', () => {
   const chart = buildSparklineChart([
     market({ sparkline_in_7d: { price: [10, 20, 30] } }),
     market({ sparkline_in_7d: { price: [40] } }),
     market(),
   ]);
 
-  assert.deepEqual(chart.labels, ['Sample 1', 'Sample 2', 'Sample 3']);
-  assert.deepEqual(chart.datasets[0].data, [10, 20, 30]);
-  assert.deepEqual(chart.datasets[1].data, [40]);
+  assert.equal(chart.labels, undefined);
+  assert.deepEqual(chart.datasets[0].data, [
+    {
+      x: Date.parse('2026-10-28T08:00:00Z'),
+      y: 10,
+    },
+    {
+      x: Date.parse('2026-10-28T09:00:00Z'),
+      y: 20,
+    },
+    {
+      x: Date.parse('2026-10-28T10:00:00Z'),
+      y: 30,
+    },
+  ]);
+  assert.deepEqual(chart.datasets[1].data, [{
+    x: Date.parse('2026-10-28T10:00:00Z'),
+    y: 40,
+  }]);
   assert.deepEqual(chart.datasets[2].data, []);
-  assert.deepEqual(buildSparklineChart([]), {
-    labels: [],
-    datasets: [],
-  });
+  assert.deepEqual(buildSparklineChart([]), { datasets: [] });
+});
+
+test('hourly sparkline estimates handle year rollover and invalid update dates', () => {
+  const chart = buildSparklineChart([
+    market({
+      last_updated: '2027-01-01T00:45:00Z',
+      sparkline_in_7d: { price: [1, 2] },
+    }),
+    market({
+      last_updated: 'invalid',
+      sparkline_in_7d: { price: [1] },
+    }),
+  ]);
+
+  assert.deepEqual(chart.datasets[0].data, [
+    {
+      x: Date.parse('2026-12-31T23:00:00Z'),
+      y: 1,
+    },
+    {
+      x: Date.parse('2027-01-01T00:00:00Z'),
+      y: 2,
+    },
+  ]);
+  assert.deepEqual(chart.datasets[1].data, []);
 });
 
 test('metric charts keep zero and missing values distinct with stable colors', () => {

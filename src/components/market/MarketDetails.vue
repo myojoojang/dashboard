@@ -44,7 +44,8 @@
         </dl>
       </v-sheet>
       <ChartCard
-        title="Price (7-day trend · sample order)"
+        time-axis
+        title="Price (7-day trend · approximate times)"
         chart-type="line"
         :chart-data="priceChart"
       />

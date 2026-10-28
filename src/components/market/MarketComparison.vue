@@ -21,7 +21,8 @@
         Market comparison · {{ currency.toUpperCase() }}
       </h2>
       <ChartCard
-        title="Prices (7-day trend · sample order)"
+        time-axis
+        title="Prices (7-day trend · approximate times)"
         chart-type="line"
         :chart-data="chartData"
         show-legend

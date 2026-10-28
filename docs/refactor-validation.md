@@ -42,7 +42,7 @@ The original component had handlers that were not called by the dashboard itself
 
 - The market request uses `per_page=250` instead of `1000`, respecting CoinGecko's documented maximum. It still requests only page 1; it does not enumerate 1,000 coins.
 - Detailed history charts use exact API timestamps as continuous x coordinates, with UTC labels and tooltips. The original generated dates from array indexes, regardless of actual sampling intervals. Uneven intervals now have proportional spacing.
-- Seven-day overview, comparison, and detail trends reuse market sparklines. These have no timestamps, so labels explicitly show sample order instead of dates. No per-coin requests are made for these charts. Short series are neither padded nor assigned invented dates.
+- Seven-day overview, comparison, and detail trends reuse market sparklines. Their hourly timestamps are estimated backward from each coin’s last-updated UTC hour and marked approximate. No per-coin requests are made for these charts. Short series use their own length and update hour; they are not stretched across seven days.
 - Missing numeric fields display a dash instead of being converted to zero or throwing. Small prices remain visible rather than rounding to zero.
 - Errors and loading states are visible, with manual retry. There are no automatic retries or background polling.
 - Closing a dialog preserves the dashboard data and selection. The original reloaded both endpoints and reset state on close.
@@ -69,4 +69,4 @@ Browser checks verified computed desktop control dimensions and styling, centere
 
 Tests cover exact historical timestamps, uneven intervals, UTC daylight-saving transitions, year rollover, and reuse of timestamp-free sparkline samples. Browser checks verify that overview and comparison trigger no history requests, while details makes one request with manual retry on failure. Historical axes retain proportional timestamp spacing and UTC labels.
 
-The initial timestamp fix added per-coin seven-day history requests. Those triggered public API rate limits, so they have been removed. The detailed historical axes remain corrected; seven-day charts explicitly show sample order instead of claiming timestamps the market response does not provide.
+The initial timestamp fix added per-coin seven-day history requests. Those triggered public API rate limits, so they have been removed. The detailed historical axes remain corrected; seven-day charts use approximate hourly timestamps without additional requests.

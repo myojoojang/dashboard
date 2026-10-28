@@ -41,7 +41,8 @@
           </v-col>
         </v-row>
         <ChartCard
-          title="Top 10 cryptocurrencies (7-day trend · sample order)"
+          time-axis
+          title="Top 10 cryptocurrencies (7-day trend · approximate times)"
           chart-type="line"
           :chart-data="topMarketsChart"
           show-legend

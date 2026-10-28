@@ -139,13 +139,13 @@ export default defineComponent({
             button.type = 'button';
             button.className = [
               'market-details-button v-btn v-btn--fab v-btn--round',
-              'theme--light v-size--x-small primary--text',
+              'theme--light v-size--x-small primary white--text',
             ].join(' ');
             const content = document.createElement('span');
             const icon = document.createElement('i');
 
             content.className = 'v-btn__content';
-            icon.className = 'v-icon notranslate mdi mdi-magnify theme--light';
+            icon.className = 'v-icon notranslate mdi mdi-magnify theme--light white--text';
             icon.setAttribute('aria-hidden', 'true');
             content.append(icon);
             button.append(content);

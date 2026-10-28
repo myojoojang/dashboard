@@ -31,18 +31,26 @@ export function buildMetricChart(items: MarketItem[], metric: MarketMetric): Das
 }
 
 export function buildSparklineChart(items: MarketItem[]): DashboardChartData {
-  const sampleCount = Math.max(0, ...items.map((item) => {
-    return item.sparkline_in_7d?.price.length ?? 0;
-  }));
+  const hourInMilliseconds = 60 * 60 * 1000;
 
   return {
-    labels: Array.from({ length: sampleCount }, (_value, index) => {
-      return `Sample ${index + 1}`;
-    }),
     datasets: items.map((item, index) => {
+      const prices = item.sparkline_in_7d?.price ?? [];
+      const updatedAt = Date.parse(item.last_updated);
+      const lastSampleHour = Math.floor(updatedAt / hourInMilliseconds) * hourInMilliseconds;
+      // Sparkline timestamps are estimated: the API only supplies hourly price samples.
+      const data = Number.isFinite(updatedAt) ? prices.map((price, sampleIndex) => {
+        const hoursBeforeLastSample = prices.length - 1 - sampleIndex;
+
+        return {
+          x: lastSampleHour - hoursBeforeLastSample * hourInMilliseconds,
+          y: price,
+        };
+      }) : [];
+
       return {
         label: item.name,
-        data: item.sparkline_in_7d?.price ?? [],
+        data,
         borderColor: seriesColor(index),
         backgroundColor: 'transparent',
         borderWidth: 1,

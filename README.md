@@ -37,7 +37,7 @@ src/
 
 The application uses TypeScript, Vue 2.7, Vuetify 2, Vite 7, Chart.js 4, and AG Grid 25. The existing Vue/Vuetify/grid architecture is retained to preserve the table and UI behavior. Vue 2 and its Vite plugin are no longer actively maintained; a full UI framework migration is separate work.
 
-Chart.js supports line, vertical bar, horizontal bar, and doughnut charts through named chart types. Doughnut remains the default; dashboard line charts select their type explicitly. `ChartCard` owns chart creation and destruction. `chartOptions.ts` holds chart-type defaults and `formatChartData.ts` builds datasets; detailed history charts plot exact API timestamps on a continuous axis with UTC labels and tooltips. Seven-day trends use the market response’s timestamp-free samples and explicitly label sample order; they do not claim exact dates.
+Chart.js supports line, vertical bar, horizontal bar, and doughnut charts through named chart types. Doughnut remains the default; dashboard line charts select their type explicitly. `ChartCard` owns chart creation and destruction. `chartOptions.ts` holds chart-type defaults and `formatChartData.ts` builds datasets; detailed history charts plot exact API timestamps on a continuous axis with UTC labels and tooltips. Seven-day trends estimate timestamps at one-hour intervals, working backward from each coin’s last-updated UTC hour. Chart titles mark these times as approximate because the market response supplies no sample timestamps.
 
 The table uses DOM elements and text nodes for custom cells. Sorting, column filtering, resizing, multiple selection, and details are available. Narrow screens can scroll the table horizontally without dropping columns.
 
