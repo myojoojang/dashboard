@@ -1,16 +1,21 @@
 <template>
-  <router-view />
+  <v-app>
+    <SiteLayout>
+      <DashboardView />
+    </SiteLayout>
+  </v-app>
 </template>
 
-<script>
-export default {
-  name: "App",
-  components: {},
-  data: () => ({})
-};
-</script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+import SiteLayout from './components/layout/SiteLayout.vue';
+import DashboardView from './views/DashboardView.vue';
 
-<style>
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap");
-@import "./styles/app.css";
-</style>
+export default defineComponent({
+  name: 'App',
+  components: {
+    SiteLayout,
+    DashboardView,
+  },
+});
+</script>

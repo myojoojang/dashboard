@@ -1,94 +1,54 @@
-
 a {
   text-decoration: none;
 }
-
 body {
-  background: linear-gradient(
-    180deg,
-    #0f2d61 500px,
-    #999aac 0,
-    #999aac 100%
-  ) !important;
+  background: linear-gradient(180deg, #0f2d61 500px, #999aac 500px) !important;
 }
-
 .theme--light.v-application {
   background: transparent !important;
 }
-
 body .v-application {
-  font-family: "Noto Sans KR", sans-serif !important;
+  font-family: 'Noto Sans KR', sans-serif !important;
   font-weight: 400;
   font-size: 0.95rem;
 }
-
 .small-text {
   font-size: 0.8rem;
 }
-
-body div .v-sheet.v-card:not(.v-sheet--outlined) {
+body .v-card:not(.v-sheet--outlined) {
   border-radius: 25px;
-  -webkit-box-shadow: 11px 11px 10px -8px rgba(0, 102, 203, 0.1);
-  box-shadow: 11px 11px 10px -8px rgba(0, 102, 203, 0.1);
- 
+  box-shadow: 11px 11px 10px -8px rgb(0 102 203 / 10%);
 }
-
-div .v-list .v-list-item--active {
-  color: #0f2d61;
+body .v-dialog--fullscreen > .v-card:not(.v-sheet--outlined) {
+  border-radius: 0;
 }
-
 div .theme--light.v-select .v-select__selection--comma {
   color: #0f2d61;
   font-size: 0.8rem;
 }
-
 div .theme--light.v-icon {
   color: #0f2d61;
 }
-
 div .v-btn {
   border-radius: 25px;
 }
-
-#app
-  > div
-  > div
-  > nav
-  > div.v-navigation-drawer__content
-  > div.ma-2.v-card.v-sheet.theme--light.white
-  > div {
-  border-radius: 25px !important;
-}
-
-div .v-navigation-drawer__border {
-  width: 0px;
-}
-
-.v-navigation-drawer--is-mobile:not(.v-navigation-drawer--close),
-.v-navigation-drawer--temporary:not(.v-navigation-drawer--close) {
-  box-shadow: none !important;
-}
-
 div .v-tab {
   border-radius: 25px;
   height: 40px;
   margin-top: 5px;
 }
-
 div .v-tab--active {
   background: #0f2d61;
-  color: #ffffff !important;
+  color: #fff !important;
   border-radius: 25px;
   margin-left: 6px;
 }
 div .v-tabs-slider {
   display: none;
 }
-
 div .v-progress-linear__background {
   border-radius: 0 25px 25px 0;
 }
 div .v-progress-linear__determinate {
   border-radius: 25px 0 0 25px;
 }
-
